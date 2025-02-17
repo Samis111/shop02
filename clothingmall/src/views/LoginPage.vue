@@ -143,7 +143,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions('user', ['login', 'register']),
+    ...mapActions({
+      loginAction: 'user/login',
+      registerAction: 'user/register'
+    }),
     switchForm() {
       this.isLogin = !this.isLogin
     },
@@ -152,15 +155,13 @@ export default {
         await this.$refs.loginForm.validate()
         this.loading = true
 
-        await this.login({
+        await this.loginAction({
           username: this.loginForm.username,
           password: this.loginForm.password,
           remember: this.rememberMe
         })
 
         this.$message.success('登录成功')
-
-        // 跳转到之前的页面或首页
         const redirect = this.$route.query.redirect || '/'
         this.$router.push(redirect)
       } catch (error) {
@@ -181,7 +182,7 @@ export default {
         await this.$refs.registerForm.validate()
         this.loading = true
 
-        await this.register({
+        await this.registerAction({
           username: this.registerForm.username,
           phone: this.registerForm.phone,
           code: this.registerForm.code,

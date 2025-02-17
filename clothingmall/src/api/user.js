@@ -27,7 +27,7 @@ export default {
    */
   login(data) {
     return request({
-      url: '/auto/login',
+      url: '/user/login',
       method: 'post',
       data
     })
@@ -49,7 +49,7 @@ export default {
    */
   register(data) {
     return request({
-      url: '/auto/register',
+      url: '/user/register',
       method: 'post',
       data
     })
@@ -118,6 +118,14 @@ export default {
       url: '/user/password',
       method: 'put',
       data
+    })
+  },
+
+  sendCode(phone) {
+    return request({
+      url: '/user/sendCode',
+      method: 'post',
+      data: { phone }
     })
   }
 } 
