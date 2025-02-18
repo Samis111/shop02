@@ -7,6 +7,7 @@ import CartPage from '@/views/CartPage.vue'
 import CheckoutPage from '@/views/CheckoutPage.vue'
 import UserCenter from '@/views/UserCenter.vue'
 import LoginPage from '@/views/LoginPage.vue'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -72,9 +73,33 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const token = store.state.user.token
+  
+  // 需要登录的页面
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!token) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    // 不需要登录的页面
+    if (token && to.path === '/login') {
+      // 已登录用户访问登录页，重定向到首页
+      next('/')
+    } else {
+      next()
+    }
+  }
 })
 
 export default router

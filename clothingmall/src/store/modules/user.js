@@ -1,4 +1,4 @@
-import { login as loginApi, register as registerApi } from '@/api/user'
+import * as userApi from '@/api/user'
 
 const state = {
   token: localStorage.getItem('token') || '',
@@ -25,18 +25,33 @@ const mutations = {
 const actions = {
   async login({ commit }, loginData) {
     try {
-      const { token, userInfo } = await loginApi(loginData)
+      const response = await userApi.login(loginData)
+      
+      // 确保 API 返回了正确的数据结构
+      if (!response.data) {
+        throw new Error('登录接口返回数据格式错误')
+      }
+
+      const { token, user: userInfo } = response.data
+
+      if (!token) {
+        throw new Error('登录失败：未获取到token')
+      }
+
+      // 存储认证信息
       commit('SET_TOKEN', token)
       commit('SET_USER_INFO', userInfo)
+
       return { token, userInfo }
     } catch (error) {
+      console.error('登录 action 错误：', error)
       throw error
     }
   },
 
   async register({ commit }, registerData) {
     try {
-      const result = await registerApi(registerData)
+      const result = await userApi.register(registerData)
       return result
     } catch (error) {
       throw error

@@ -34,8 +34,8 @@
       </template>
       <template v-else>
         <div class="user-info" @click="showUserMenu = !showUserMenu">
-          <img :src="userAvatar" class="avatar" alt="用户头像">
-          <span>{{ userName }}</span>
+          <img :src="userInfo.avatar" class="avatar" alt="用户头像">
+          <span>{{ userInfo.username }}</span>
           <!-- 用户菜单 -->
           <div v-show="showUserMenu" class="user-menu">
             <router-link to="/user/profile">个人信息</router-link>
@@ -58,6 +58,8 @@
 </template>
 
 <script>
+import { mapState, mapGetters, mapActions } from 'vuex'
+
 export default {
   name: 'AppHeader',
   data() {
@@ -71,23 +73,32 @@ export default {
         { name: '童装', path: '/category/children' },
         { name: '品牌专区', path: '/brands' },
         { name: '促销活动', path: '/promotions' }
-      ],
-      isLoggedIn: false, // 后续需要通过vuex或其他状态管理来处理
-      userName: '',
-      userAvatar: '',
-      cartCount: 0
+      ]
+    }
+  },
+  computed: {
+    ...mapGetters('user', ['isLoggedIn']),
+    ...mapState('user', ['userInfo']),
+    ...mapState('cart', ['cartItems']),
+    cartCount() {
+      return this.cartItems ? this.cartItems.length : 0
     }
   },
   methods: {
+    ...mapActions('user', ['logout']),
     handleSearch() {
       if (this.searchKeyword.trim()) {
         this.$router.push(`/search?keyword=${encodeURIComponent(this.searchKeyword)}`)
       }
     },
-    handleLogout() {
-      // 实现登出逻辑
-      this.isLoggedIn = false
-      this.$router.push('/login')
+    async handleLogout() {
+      try {
+        await this.logout()
+        this.$message.success('退出登录成功')
+        this.$router.push('/login')
+      } catch (error) {
+        this.$message.error('退出登录失败')
+      }
     }
   }
 }

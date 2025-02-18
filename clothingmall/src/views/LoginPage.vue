@@ -41,16 +41,17 @@
 
         <el-form-item prop="phone">
           <el-input v-model="registerForm.phone" placeholder="请输入手机号" prefix-icon="el-icon-mobile-phone">
+          </el-input>
+        </el-form-item>
+
+        <el-form-item prop="code" class="verification-code">
+          <el-input v-model="registerForm.code" placeholder="请输入验证码" prefix-icon="el-icon-message">
             <template #append>
               <el-button :disabled="!!countdown" @click="sendCode">
                 {{ countdown ? `${countdown}s` : '获取验证码' }}
               </el-button>
             </template>
           </el-input>
-        </el-form-item>
-
-        <el-form-item prop="code">
-          <el-input v-model="registerForm.code" placeholder="请输入验证码" prefix-icon="el-icon-message" />
         </el-form-item>
 
         <el-form-item prop="password">
@@ -79,6 +80,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { sendCode } from '@/api/user'
 
 export default {
   name: 'LoginPage',
@@ -155,19 +157,28 @@ export default {
         await this.$refs.loginForm.validate()
         this.loading = true
 
-        await this.loginAction({
+        const result = await this.loginAction({
           username: this.loginForm.username,
           password: this.loginForm.password,
           remember: this.rememberMe
         })
 
+        console.log('登录成功，返回数据：', result)
+
         this.$message.success('登录成功')
+        
         const redirect = this.$route.query.redirect || '/'
-        this.$router.push(redirect)
+        console.log('重定向地址：', redirect)
+        
+        this.$nextTick(() => {
+          this.$router.push(redirect).catch(err => {
+            console.error('路由跳转错误：', err)
+            this.$router.push('/')
+          })
+        })
       } catch (error) {
-        if (error.message) {
-          this.$message.error(error.message)
-        }
+        console.error('登录错误：', error)
+        this.$message.error(error.message || '登录失败，请重试')
       } finally {
         this.loading = false
       }
@@ -206,7 +217,7 @@ export default {
           return
         }
 
-        await this.$api.user.sendCode(this.registerForm.phone)
+        await sendCode(this.registerForm.phone)
         this.$message.success('验证码已发送')
 
         // 开始倒计时
@@ -363,5 +374,9 @@ export default {
   .form-container {
     padding: 20px;
   }
+}
+
+.verification-code {
+  margin-top: -10px; /* 可以根据需要调整间距 */
 }
 </style>
