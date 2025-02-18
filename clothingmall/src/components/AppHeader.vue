@@ -30,7 +30,7 @@
     <div class="user-actions">
       <template v-if="!isLoggedIn">
         <router-link to="/login" class="login-btn">登录</router-link>
-        <router-link to="/register" class="register-btn">注册</router-link>
+        <!-- <router-link to="/register" class="register-btn">注册</router-link> -->
       </template>
       <template v-else>
         <div class="user-info" @click="showUserMenu = !showUserMenu">
