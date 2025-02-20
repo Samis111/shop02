@@ -97,8 +97,7 @@ export default {
   methods: {
     async fetchProductDetail() {
       try {
-        // TODO: 调用API获取商品详情
-        const response = await this.$api.products.getDetail(this.productId)
+        const response = await this.$api.product.getDetail(this.productId)  // 直接使用导入的方法
         this.product = response.data
         
         // 更新面包屑

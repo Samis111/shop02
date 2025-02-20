@@ -4,7 +4,15 @@
     
     <div class="main-content">
       <!-- 面包屑导航 -->
-      <app-breadcrumb :breadcrumbs="breadcrumbs" />
+      <div class="breadcrumb">
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+          <el-breadcrumb-item v-if="$route.params.category">
+            {{ getCategoryName($route.params.category) }}
+          </el-breadcrumb-item>
+          <el-breadcrumb-item v-else>全部商品</el-breadcrumb-item>
+        </el-breadcrumb>
+      </div>
       
       <div class="content-wrapper">
         <!-- 筛选区域 -->
@@ -81,22 +89,18 @@ export default {
   },
   data() {
     return {
-      breadcrumbs: [
-        { name: '首页', path: '/' },
-        { name: '商品列表', path: '/products' }
-      ],
-      viewMode: 'grid', // 'grid' 或 'list'
+      viewMode: 'grid',
       currentPage: 1,
       pageSize: 20,
       total: 0,
       products: [],
+      category: '',
       filters: {
         sort: 'default',
-        price: { min: null, max: null },
-        sizes: [],
-        colors: [],
-        brands: [],
-        styles: []
+        price: {
+          min: null,
+          max: null
+        }
       }
     }
   },
@@ -106,56 +110,51 @@ export default {
   },
   created() {
     // 从路由参数中获取分类信息
-    const { category } = this.$route.params
-    if (category) {
-      this.breadcrumbs.push({ 
-        name: this.getCategoryName(category), 
-        path: `/category/${category}` 
-      })
-    }
-    
+    this.category = this.$route.params.category
+    console.log('当前分类:', this.category)
     this.fetchProducts()
   },
   methods: {
     ...mapActions('cart', ['addToCart']),
     ...mapActions('favorite', ['toggleFavorite']),
     getCategoryName(category) {
-      // TODO: 根据category获取分类名称
-      return category
+      const categoryMap = {
+        'men': '男装',
+        'women': '女装',
+        'children': '童装'
+        // 可以根据需要添加更多分类
+      }
+      return categoryMap[category] || category
     },
     async fetchProducts() {
       try {
-        // TODO: 调用API获取商品数据
-        // const response = await this.$api.products.getList({
-        //   page: this.currentPage,
-        //   pageSize: this.pageSize,
-        //   ...this.filters
-        // })
-        // this.products = response.data.items
-        // this.total = response.data.total
+        const params = {
+          page: this.currentPage,
+          pageSize: this.pageSize,
+          sort: this.filters.sort,
+          minPrice: this.filters.price.min,
+          maxPrice: this.filters.price.max
+        }
 
-        // 模拟数据
-        this.products = [
-          {
-            id: 1,
-            name: '时尚连衣裙',
-            description: '2024春季新款气质显瘦',
-            price: 199,
-            originalPrice: 299,
-            image: '/images/products/dress1.jpg',
-            rating: 4.5,
-            ratingCount: 128,
-            sales: 1000,
-            stock: 50,
-            tags: ['新品', '热销'],
-            isFavorite: false
-          },
-          // ... 更多商品数据
-        ]
-        this.total = 100
+        console.log('请求参数:', params)
+        console.log('当前分类:', this.category)
+
+        let response
+        if (this.category) {
+          // 获取分类商品
+          response = await this.$api.product.getByCategory(this.category, params)
+        } else {
+          // 获取所有商品
+          response = await this.$api.product.list(params)
+        }
+
+        console.log('API响应:', response)
+
+        this.products = response.data.list
+        this.total = response.data.total
       } catch (error) {
         console.error('获取商品列表失败:', error)
-        // TODO: 错误提示
+        this.$message.error('获取商品列表失败')
       }
     },
     handleFilterChange(filters) {
@@ -164,6 +163,7 @@ export default {
       this.fetchProducts()
     },
     handlePageChange(page) {
+      this.currentPage = page
       this.fetchProducts()
     },
     async handleAddToCart(product) {
@@ -185,6 +185,18 @@ export default {
         this.$message.error('操作失败：' + error.message)
       }
     }
+  },
+  watch: {
+    // 监听路由参数变化
+    '$route.params.category': {
+      handler(newCategory) {
+        console.log('路由分类变化:', newCategory)
+        this.category = newCategory
+        this.currentPage = 1 // 重置页码
+        this.fetchProducts()
+      },
+      immediate: true
+    }
   }
 }
 </script>
@@ -194,6 +206,7 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 60px;  /* 为固定头部留出空间 */
 }
 
 .main-content {
@@ -202,6 +215,11 @@ export default {
   margin: 0 auto;
   padding: 20px;
   width: 100%;
+}
+
+.breadcrumb {
+  margin-bottom: 20px;
+  padding: 10px 0;
 }
 
 .content-wrapper {

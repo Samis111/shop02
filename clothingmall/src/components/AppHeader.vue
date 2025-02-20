@@ -71,8 +71,6 @@ export default {
         { name: '男装', path: '/category/men' },
         { name: '女装', path: '/category/women' },
         { name: '童装', path: '/category/children' },
-        { name: '品牌专区', path: '/brands' },
-        { name: '促销活动', path: '/promotions' }
       ]
     }
   },

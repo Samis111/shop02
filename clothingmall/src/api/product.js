@@ -2,13 +2,13 @@ import request from '@/utils/request'
 
 export default {
   /**
-   * 获取商品列表
+   * 获取所有商品列表
    * @param {Object} params 查询参数
    * @param {number} params.page 页码
-   * @param {number} params.limit 每页数量
-   * @param {string} params.category 分类ID
-   * @param {string} params.keyword 搜索关键词
-   * @param {string} params.sort 排序方式(new/price/sales)
+   * @param {number} params.pageSize 每页数量
+   * @param {string} [params.sort] 排序方式(default/price-asc/price-desc/sales)
+   * @param {number} [params.minPrice] 最低价格
+   * @param {number} [params.maxPrice] 最高价格
    * @returns {Promise} 返回商品列表和分页信息
    * @example
    * {
@@ -32,6 +32,24 @@ export default {
   list(params) {
     return request({
       url: '/products',
+      method: 'get',
+      params
+    })
+  },
+
+  /**
+   * 获取分类商品列表
+   * @param {string} category 分类(men/women/children)
+   * @param {Object} params 查询参数
+   * @param {number} params.page 页码
+   * @param {number} params.pageSize 每页数量
+   * @param {string} [params.sort] 排序方式(default/price-asc/price-desc/sales)
+   * @param {number} [params.minPrice] 最低价格
+   * @param {number} [params.maxPrice] 最高价格
+   */
+  getByCategory(category, params) {
+    return request({
+      url: `/category/${category}/products`,
       method: 'get',
       params
     })
