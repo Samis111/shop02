@@ -7,6 +7,7 @@ import com.it.domain.User;
 import com.it.service.LoguserService;
 import com.it.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,7 @@ public class LoginController {
     private LoguserService loguserService;
 
     @RequestMapping("login")
-    public Result login(User user, HttpSession session) {
+    public Result login(@RequestBody User user, HttpSession session) {
 
         String username = null;
         String password = null;

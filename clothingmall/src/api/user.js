@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 改为具名导出
 export const login = (data) => {
   return request({
-    url: '/user/login',
+    url: '/auto/login',
     method: 'post',
     data
   })

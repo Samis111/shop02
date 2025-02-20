@@ -6,15 +6,7 @@
     <div class="banner-section">
       <el-carousel height="500px">
         <el-carousel-item v-for="banner in banners" :key="banner.id">
-          <img :src="banner.image" :alt="banner.title">
-          <div class="banner-content">
-            <h2>{{ banner.title }}</h2>
-            <p>{{ banner.description }}</p>
-            <router-link 
-              :to="banner.link"
-              class="banner-btn"
-            >立即查看</router-link>
-          </div>
+          <img :src="banner.valueurl" :alt="banner.thiskey">
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -43,10 +35,20 @@
             查看更多 <i class="el-icon-arrow-right"></i>
           </router-link>
         </div>
-        <product-list 
-          :products="newProducts"
-          :loading="newProductsLoading"
-        />
+        <div class="product-grid">
+          <div v-for="product in newProducts" :key="product.id" class="product-card" @click="$router.push(`/products/${product.id}`)">
+            <div class="product-image">
+              <img :src="product.url" :alt="product.name">
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">{{ product.name }}</h3>
+              <div class="product-meta">
+                <span class="product-type">{{ product.type }}</span>
+                <span class="product-price">¥{{ product.price.toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -59,10 +61,20 @@
             查看更多 <i class="el-icon-arrow-right"></i>
           </router-link>
         </div>
-        <product-list 
-          :products="hotProducts"
-          :loading="hotProductsLoading"
-        />
+        <div class="product-grid">
+          <div v-for="product in hotProducts" :key="product.id" class="product-card" @click="$router.push(`/products/${product.id}`)">
+            <div class="product-image">
+              <img :src="product.url" :alt="product.name">
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">{{ product.name }}</h3>
+              <div class="product-meta">
+                <span class="product-type">{{ product.type }}</span>
+                <span class="product-price">¥{{ product.price.toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -75,10 +87,20 @@
             查看更多 <i class="el-icon-arrow-right"></i>
           </router-link>
         </div>
-        <product-list 
-          :products="recommendProducts"
-          :loading="recommendProductsLoading"
-        />
+        <div class="product-grid">
+          <div v-for="product in recommendProducts" :key="product.id" class="product-card" @click="$router.push(`/products/${product.id}`)">
+            <div class="product-image">
+              <img :src="product.url" :alt="product.name">
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">{{ product.name }}</h3>
+              <div class="product-meta">
+                <span class="product-type">{{ product.type }}</span>
+                <span class="product-price">¥{{ product.price.toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -90,14 +112,12 @@
 import { mapActions } from 'vuex'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
-import ProductList from '@/components/ProductList.vue'
 
 export default {
   name: 'HomePage',
   components: {
     AppHeader,
-    AppFooter,
-    ProductList
+    AppFooter
   },
   data() {
     return {
@@ -145,7 +165,7 @@ export default {
           sort: 'new',
           limit: 8
         })
-        this.newProducts = response.data.list
+        this.newProducts = response.data
       } catch (error) {
         console.error('获取新品失败:', error)
       } finally {
@@ -159,7 +179,7 @@ export default {
           sort: 'sales',
           limit: 8
         })
-        this.hotProducts = response.data.list
+        this.hotProducts = response.data
       } catch (error) {
         console.error('获取热销商品失败:', error)
       } finally {
@@ -172,7 +192,7 @@ export default {
         const response = await this.$api.product.recommend({
           limit: 8
         })
-        this.recommendProducts = response.data.list
+        this.recommendProducts = response.data
       } catch (error) {
         console.error('获取推荐商品失败:', error)
       } finally {
@@ -194,51 +214,20 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 60px;
 }
 
 .banner-section {
   margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
 }
 
 .banner-section img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.banner-content {
-  position: absolute;
-  top: 50%;
-  left: 10%;
-  transform: translateY(-50%);
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.banner-content h2 {
-  font-size: 36px;
-  margin: 0 0 15px;
-}
-
-.banner-content p {
-  font-size: 18px;
-  margin: 0 0 30px;
-  opacity: 0.9;
-}
-
-.banner-btn {
-  display: inline-block;
-  padding: 12px 30px;
-  background: #fff;
-  color: #333;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: all 0.3s;
-}
-
-.banner-btn:hover {
-  background: #f5f5f5;
-  transform: translateY(-2px);
+  object-position: center;
 }
 
 .container {
@@ -316,21 +305,6 @@ export default {
     margin-bottom: 20px;
   }
   
-  .banner-content {
-    text-align: center;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-  }
-  
-  .banner-content h2 {
-    font-size: 24px;
-  }
-  
-  .banner-content p {
-    font-size: 14px;
-  }
-  
   .container {
     padding: 0 10px;
   }
@@ -347,5 +321,77 @@ export default {
   .section-header h2 {
     font-size: 20px;
   }
+}
+
+.hot-products {
+  padding: 20px;
+}
+
+.hot-products h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-image {
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: 12px;
+}
+
+.product-name {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.product-type {
+  color: #666;
+  font-size: 14px;
+}
+
+.product-price {
+  color: #ff4d4f;
+  font-weight: bold;
+  font-size: 16px;
 }
 </style> 
