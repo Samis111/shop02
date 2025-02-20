@@ -52,6 +52,7 @@ public class Cart implements Serializable {
      */
     private Date thistime;
 
+    private String oid;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

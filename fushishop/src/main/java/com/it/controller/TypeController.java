@@ -1,5 +1,6 @@
 package com.it.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.it.domain.Result;
 import com.it.domain.Type;
 import com.it.domain.User;
@@ -38,6 +39,17 @@ public class TypeController {
         return Result.ok();
     }
 
+
+    /**
+     * 类型限制接口
+     *
+     * @return
+     */
+    @RequestMapping("listLimit")
+    public Result listLimit() {
+        new QueryWrapper<Type>().last("limit 5");
+        return Result.ok(userService.list());
+    }
 
     @PostMapping("update")
     public Result update(Type user) {
