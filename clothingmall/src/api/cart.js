@@ -28,9 +28,9 @@ export default {
    *   }
    * }
    */
-  list() {
+  list(uid) {
     return request({
-      url: '/cart',
+      url: '/cart/userFind/'+uid,
       method: 'get'
     })
   },
@@ -50,7 +50,7 @@ export default {
    */
   add(data) {
     return request({
-      url: '/cart',
+      url: '/cart/save',
       method: 'post',
       data
     })
@@ -69,8 +69,8 @@ export default {
    */
   update(id, quantity) {
     return request({
-      url: `/cart/${id}`,
-      method: 'put',
+      url: `/cart/update`,
+      method: 'get',
       data: { quantity }
     })
   },
@@ -87,8 +87,8 @@ export default {
    */
   remove(id) {
     return request({
-      url: `/cart/${id}`,
-      method: 'delete'
+      url: `/cart/delete/${id}`,
+      method: 'get'
     })
   },
 
@@ -104,7 +104,7 @@ export default {
   clear() {
     return request({
       url: '/cart/clear',
-      method: 'delete'
+      method: 'get'
     })
   }
 } 
