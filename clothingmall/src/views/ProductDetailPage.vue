@@ -1,52 +1,28 @@
 <template>
   <div class="product-detail-page">
     <app-header />
-    
+
     <div class="main-content">
       <!-- 面包屑导航 -->
       <app-breadcrumb :breadcrumbs="breadcrumbs" />
-      
+
       <!-- 商品基本信息区域 -->
       <div class="product-basic">
         <div class="product-gallery">
-          <product-image 
-            :images="product.images"
-            :alt="product.name"
-          />
+          <product-image :images="product.images" :alt="product.name" />
         </div>
-        
+
         <div class="product-info">
-          <product-info 
-            :product="product"
-            @add-to-cart="handleAddToCart"
-          />
+          <product-info :product="product" @add-to-cart="handleAddToCart" />
         </div>
       </div>
 
       <!-- 商品详情区域 -->
       <div class="product-detail">
         <el-tabs v-model="activeTab" class="detail-tabs">
-          <el-tab-pane label="商品详情" name="detail">
-            <div class="detail-content" v-html="product.detail"></div>
-          </el-tab-pane>
-          
-          <el-tab-pane label="规格参数" name="params">
-            <div class="params-list">
-              <div 
-                v-for="(param, index) in product.params"
-                :key="index"
-                class="param-item"
-              >
-                <span class="param-label">{{ param.label }}</span>
-                <span class="param-value">{{ param.value }}</span>
-              </div>
-            </div>
-          </el-tab-pane>
-          
-          <el-tab-pane 
-            :label="`用户评价(${product.reviewCount})`" 
-            name="reviews"
-          >
+
+
+          <el-tab-pane :label="`用户评价(${product.reviewCount})`" name="reviews">
             <product-review :product-id="productId" />
           </el-tab-pane>
         </el-tabs>
@@ -99,7 +75,7 @@ export default {
       try {
         const response = await this.$api.product.getDetail(this.productId)  // 直接使用导入的方法
         this.product = response.data
-        
+
         // 更新面包屑
         this.breadcrumbs = [
           { name: '首页', path: '/' },
@@ -163,7 +139,7 @@ export default {
   margin-bottom: 40px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .detail-tabs {
@@ -205,10 +181,10 @@ export default {
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .product-gallery {
     flex: none;
     width: 100%;
   }
 }
-</style> 
+</style>

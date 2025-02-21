@@ -21,49 +21,13 @@
     <div class="select-section">
       <!-- 颜色选择 -->
       <div class="select-item">
-        <div class="select-label">颜色</div>
-        <div class="color-options">
-          <div 
-            v-for="color in product.colors" 
-            :key="color.value"
-            class="color-item"
-            :class="{ active: selectedColor === color.value }"
-            @click="selectColor(color.value)"
-          >
-            <span 
-              class="color-circle"
-              :style="{ backgroundColor: color.code }"
-            ></span>
-            <span class="color-name">{{ color.name }}</span>
-          </div>
-        </div>
+        
+    
       </div>
 
       <!-- 尺码选择 -->
       <div class="select-item">
-        <div class="select-label">
-          尺码
-          <span 
-            class="size-guide"
-            @click="showSizeGuide = true"
-          >尺码指南</span>
-        </div>
-        <div class="size-options">
-          <button
-            v-for="size in product.sizes"
-            :key="size.value"
-            class="size-btn"
-            :class="{
-              active: selectedSize === size.value,
-              disabled: !size.stock
-            }"
-            :disabled="!size.stock"
-            @click="selectSize(size.value)"
-          >
-            {{ size.name }}
-            <span v-if="!size.stock" class="out-of-stock">无货</span>
-          </button>
-        </div>
+      
       </div>
 
       <!-- 数量选择 -->
@@ -87,7 +51,7 @@
             :disabled="quantity >= maxQuantity"
             @click="updateQuantity(1)"
           >+</button>
-          <span class="stock-info">库存 {{ currentStock }} 件</span>
+       
         </div>
       </div>
     </div>
@@ -104,29 +68,15 @@
         :disabled="!isValid"
         @click="addToCart"
       >加入购物车</button>
-      <button 
-        class="action-btn favorite"
-        :class="{ active: isFavorite }"
-        @click="toggleFavorite"
-      >
-        <i class="iconfont" :class="isFavorite ? 'icon-heart-filled' : 'icon-heart'"></i>
-        {{ isFavorite ? '已收藏' : '收藏' }}
-      </button>
+   
     </div>
 
     <!-- 商品信息 -->
     <div class="product-meta">
-      <div class="meta-item">
-        <span class="meta-label">商品编号：</span>
-        <span class="meta-value">{{ product.sku }}</span>
-      </div>
-      <div class="meta-item">
-        <span class="meta-label">材质：</span>
-        <span class="meta-value">{{ product.material }}</span>
-      </div>
+
       <div class="meta-item">
         <span class="meta-label">品牌：</span>
-        <span class="meta-value">{{ product.brand }}</span>
+        <span class="meta-value">{{ product.type }}</span>
       </div>
     </div>
 
