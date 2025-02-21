@@ -3,21 +3,11 @@
     <!-- 品牌筛选 -->
     <div class="filter-section">
       <h3>品牌筛选</h3>
-      <el-select 
-        v-model="localFilters.brand" 
-        placeholder="选择品牌"
-        clearable
-        @change="handleFilterChange"
-      >
-        <el-option
-          v-for="brand in brands"
-          :key="brand.id"
-          :label="brand.name"
-          :value="brand.id"
-        >
+      <el-select v-model="localFilters.brand" placeholder="选择品牌" clearable @change="handleFilterChange">
+        <el-option v-for="brand in brands" :key="brand.id" :label="brand.name" :value="brand.id">
           <div class="brand-option">
             <img :src="brand.logo" :alt="brand.name" class="brand-logo">
-            <span>{{ brand.name }}</span>
+            <span>{{ brand.type }}</span>
           </div>
         </el-option>
       </el-select>
@@ -38,19 +28,9 @@
     <div class="filter-section">
       <h3>价格区间</h3>
       <div class="price-range">
-        <el-input-number 
-          v-model="localFilters.price.min" 
-          :min="0"
-          placeholder="最低价"
-          @change="handleFilterChange"
-        />
+        <el-input-number v-model="localFilters.price.min" :min="0" placeholder="最低价" @change="handleFilterChange" />
         <span class="separator">-</span>
-        <el-input-number 
-          v-model="localFilters.price.max"
-          :min="0"
-          placeholder="最高价"
-          @change="handleFilterChange"
-        />
+        <el-input-number v-model="localFilters.price.max" :min="0" placeholder="最高价" @change="handleFilterChange" />
       </div>
     </div>
   </div>
@@ -79,18 +59,18 @@ export default {
   },
   methods: {
     handleFilterChange() {
+
       this.$emit('filter-change', { ...this.localFilters })
     }
   }
 }
 </script>
-
 <style scoped>
 .product-filter {
   background: #fff;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .filter-section {
@@ -139,4 +119,4 @@ export default {
   height: 24px;
   object-fit: contain;
 }
-</style> 
+</style>

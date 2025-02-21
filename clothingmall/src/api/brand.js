@@ -17,7 +17,7 @@ export default {
    */
   list() {
     return request({
-      url: '/brands',
+      url: '/brands/list',
       method: 'get'
     })
   }

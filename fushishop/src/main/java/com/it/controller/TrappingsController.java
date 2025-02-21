@@ -32,7 +32,7 @@ public class TrappingsController {
         return Result.ok(trappingsService.list(queryWrapper));
     }
 
-    @RequestMapping("find/{Uid}")
+    @RequestMapping("{Uid}")
     public Result find(@PathVariable("Uid") Integer Uid) {
 
 

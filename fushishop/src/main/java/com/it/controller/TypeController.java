@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("Type")
+@RequestMapping("brands")
 @RestController
 public class TypeController {
 
@@ -20,9 +20,9 @@ public class TypeController {
 
     @RequestMapping("list")
     public Result list() {
+        QueryWrapper<Type> last = new QueryWrapper<Type>().last("limit 5");
+        return Result.ok(userService.list(last));
 
-
-        return Result.ok( userService.list());
     }
 
     @RequestMapping("find/{Uid}")

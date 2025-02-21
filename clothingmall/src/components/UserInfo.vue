@@ -2,10 +2,7 @@
   <div class="user-info">
     <div class="section-header">
       <h3>个人信息</h3>
-      <button 
-        class="edit-btn"
-        @click="showEditForm"
-      >
+      <button class="edit-btn" @click="showEditForm">
         <i class="iconfont icon-edit"></i>
         编辑资料
       </button>
@@ -44,25 +41,11 @@
     </div>
 
     <!-- 编辑表单弹窗 -->
-    <el-dialog
-      title="编辑个人资料"
-      :visible.sync="showDialog"
-      width="500px"
-    >
-      <el-form 
-        ref="userForm"
-        :model="userForm"
-        :rules="rules"
-        label-width="80px"
-      >
+    <el-dialog title="编辑个人资料" :visible.sync="showDialog" width="500px">
+      <el-form ref="userForm" :model="userForm" :rules="rules" label-width="80px">
         <el-form-item label="头像">
-          <el-upload
-            class="avatar-uploader"
-            :action="uploadUrl"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-          >
+          <el-upload class="avatar-uploader" :action="uploadUrl" :show-file-list="false"
+            :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <img v-if="userForm.avatar" :src="userForm.avatar" class="avatar">
             <i v-else class="iconfont icon-upload"></i>
           </el-upload>
@@ -85,16 +68,11 @@
         </el-form-item>
 
         <el-form-item label="生日">
-          <el-date-picker
-            v-model="userForm.birthday"
-            type="date"
-            placeholder="选择日期"
-            format="yyyy-MM-dd"
-            value-format="yyyy-MM-dd"
-          />
+          <el-date-picker v-model="userForm.birthday" type="date" placeholder="选择日期" format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd" />
         </el-form-item>
       </el-form>
-      
+
       <div slot="footer">
         <el-button @click="showDialog = false">取消</el-button>
         <el-button type="primary" @click="saveUserInfo">保存</el-button>
@@ -154,7 +132,7 @@ export default {
     async saveUserInfo() {
       try {
         await this.$refs.userForm.validate()
-        
+
         await this.$store.dispatch('user/updateUserInfo', this.userForm)
         this.$message.success('个人资料已更新')
         this.showDialog = false
@@ -311,15 +289,15 @@ export default {
   .user-info {
     padding: 15px;
   }
-  
+
   .avatar-section {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .user-name {
     flex-direction: column;
     gap: 5px;
   }
 }
-</style> 
+</style>
