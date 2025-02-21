@@ -78,32 +78,6 @@
       </div>
     </div>
 
-    <!-- 推荐商品 -->
-    <div class="section recommendations">
-      <div class="container">
-        <div class="section-header">
-          <h2>为您推荐</h2>
-          <router-link to="/products" class="more-link">
-            查看更多 <i class="el-icon-arrow-right"></i>
-          </router-link>
-        </div>
-        <div class="product-grid">
-          <div v-for="product in recommendProducts" :key="product.id" class="product-card" @click="$router.push(`/products/${product.id}`)">
-            <div class="product-image">
-              <img :src="product.url" :alt="product.name">
-            </div>
-            <div class="product-info">
-              <h3 class="product-name">{{ product.name }}</h3>
-              <div class="product-meta">
-                <span class="product-type">{{ product.type }}</span>
-                <span class="product-price">¥{{ product.price.toFixed(2) }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <app-footer />
   </div>
 </template>
@@ -125,7 +99,6 @@ export default {
       categories: [],
       newProducts: [],
       hotProducts: [],
-      recommendProducts: [],
       newProductsLoading: false,
       hotProductsLoading: false,
       recommendProductsLoading: false
@@ -143,8 +116,7 @@ export default {
           this.fetchBanners(),
           this.fetchCategories(),
           this.fetchNewProducts(),
-          this.fetchHotProducts(),
-          this.fetchRecommendProducts()
+          this.fetchHotProducts()
         ])
       } catch (error) {
         console.error('获取首页数据失败:', error)
@@ -156,6 +128,14 @@ export default {
         this.banners = response.data
       } catch (error) {
         console.error('获取轮播图失败:', error)
+      }
+    },
+    async fetchCategories() {
+      try {
+        const response = await this.$api.category.list()
+        this.categories = response.data
+      } catch (error) {
+        console.error('获取分类失败:', error)
       }
     },
     async fetchNewProducts() {
@@ -186,24 +166,8 @@ export default {
         this.hotProductsLoading = false
       }
     },
-    async fetchRecommendProducts() {
-      this.recommendProductsLoading = true
-      try {
-        const response = await this.$api.product.recommend({
-          limit: 8
-        })
-        this.recommendProducts = response.data
-      } catch (error) {
-        console.error('获取推荐商品失败:', error)
-      } finally {
-        this.recommendProductsLoading = false
-      }
-    },
-    goToCategory(categoryId) {
-      this.$router.push({
-        name: 'CategoryProducts',
-        params: { category: categoryId }
-      })
+    goToCategory(id) {
+      this.$router.push(`/category/${id}`)
     }
   }
 }

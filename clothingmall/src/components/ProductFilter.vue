@@ -1,5 +1,28 @@
 <template>
   <div class="product-filter">
+    <!-- 品牌筛选 -->
+    <div class="filter-section">
+      <h3>品牌筛选</h3>
+      <el-select 
+        v-model="localFilters.brand" 
+        placeholder="选择品牌"
+        clearable
+        @change="handleFilterChange"
+      >
+        <el-option
+          v-for="brand in brands"
+          :key="brand.id"
+          :label="brand.name"
+          :value="brand.id"
+        >
+          <div class="brand-option">
+            <img :src="brand.logo" :alt="brand.name" class="brand-logo">
+            <span>{{ brand.name }}</span>
+          </div>
+        </el-option>
+      </el-select>
+    </div>
+
     <!-- 排序选项 -->
     <div class="filter-section">
       <h3>排序方式</h3>
@@ -36,9 +59,16 @@
 <script>
 export default {
   name: 'ProductFilter',
+  props: {
+    brands: {
+      type: Array,
+      default: () => []
+    }
+  },
   data() {
     return {
       localFilters: {
+        brand: null,
         sort: 'default',
         price: {
           min: null,
@@ -96,5 +126,17 @@ export default {
 .el-radio {
   margin-right: 0;
   margin-bottom: 8px;
+}
+
+.brand-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 </style> 

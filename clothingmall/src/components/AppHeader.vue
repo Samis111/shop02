@@ -68,9 +68,7 @@ export default {
       showUserMenu: false,
       navItems: [
         { name: '首页', path: '/' },
-        { name: '男装', path: '/category/men' },
-        { name: '女装', path: '/category/women' },
-        { name: '童装', path: '/category/children' },
+        { name: '品牌专区', path: '/category/brand' }
       ]
     }
   },
@@ -151,6 +149,31 @@ export default {
 .nav-menu a {
   text-decoration: none;
   color: #333;
+  font-size: 16px;
+  padding: 5px 0;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.nav-menu a:hover {
+  color: #ff4d4f;
+}
+
+.nav-menu a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #ff4d4f;
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.nav-menu a:hover::after,
+.nav-menu a.router-link-active::after {
+  transform: scaleX(1);
 }
 
 .search-box {

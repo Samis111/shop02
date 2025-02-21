@@ -54,28 +54,19 @@ export default {
     }
   },
   computed: {
-    ...mapState('cart', ['items', 'loading', 'error']),
-    cartItems: {
-      get() {
-        return this.items
-      },
-      set(value) {
-        this.updateCartItems(value)
-      }
-    }
+    ...mapState('cart', ['cartItems', 'loading', 'error'])
   },
   created() {
-    this.fetchCart()
+    this.fetchCartItems()
   },
   methods: {
     ...mapActions('cart', [
-      'fetchCart',
-      'updateCartItems',
+      'fetchCartItems',
       'updateCartItem',
-      'removeCartItem'
+      'removeFromCart'
     ]),
     handleSelectAll(selected) {
-      const updatedItems = this.items.map(item => ({
+      const updatedItems = this.cartItems.map(item => ({
         ...item,
         selected
       }))
@@ -94,7 +85,7 @@ export default {
     },
     async handleRemoveItem(id) {
       try {
-        await this.removeCartItem(id)
+        await this.removeFromCart(id)
         this.$message.success('商品已移除')
       } catch (error) {
         this.$message.error('移除失败')
@@ -106,7 +97,7 @@ export default {
     }
   },
   watch: {
-    items: {
+    cartItems: {
       handler() {
         this.calculateShipping()
       },
@@ -122,6 +113,7 @@ export default {
   display: flex;
   flex-direction: column;
   background: #f5f5f5;
+  padding-top: 60px;  /* 为固定头部留出空间 */
 }
 
 .main-content {

@@ -17,7 +17,10 @@
       <div class="content-wrapper">
         <!-- 筛选区域 -->
         <aside class="filter-sidebar">
-          <product-filter @filter-change="handleFilterChange" />
+          <product-filter 
+            :brands="brands"
+            @filter-change="handleFilterChange" 
+          />
         </aside>
 
         <!-- 商品列表区域 -->
@@ -95,7 +98,9 @@ export default {
       total: 0,
       products: [],
       category: '',
+      brands: [],  // 添加品牌列表
       filters: {
+        brand: null,
         sort: 'default',
         price: {
           min: null,
@@ -109,28 +114,44 @@ export default {
     ...mapGetters('favorite', ['isFavorite'])
   },
   created() {
-    // 从路由参数中获取分类信息
     this.category = this.$route.params.category
-    console.log('当前分类:', this.category)
-    this.fetchProducts()
+    this.fetchInitialData()
   },
   methods: {
     ...mapActions('cart', ['addToCart']),
     ...mapActions('favorite', ['toggleFavorite']),
     getCategoryName(category) {
       const categoryMap = {
-        'men': '男装',
-        'women': '女装',
-        'children': '童装'
-        // 可以根据需要添加更多分类
+        'brand': '品牌专区'
       }
       return categoryMap[category] || category
+    },
+    async fetchInitialData() {
+      try {
+        // 并行获取品牌列表和商品数据
+        await Promise.all([
+          this.fetchBrands(),
+          this.fetchProducts()
+        ])
+      } catch (error) {
+        console.error('获取数据失败:', error)
+      }
+    },
+    async fetchBrands() {
+      try {
+        const response = await this.$api.brand.list()
+        this.brands = response.data
+      } catch (error) {
+        console.error('获取品牌列表失败:', error)
+        this.$message.error('获取品牌列表失败')
+      }
     },
     async fetchProducts() {
       try {
         const params = {
           page: this.currentPage,
           pageSize: this.pageSize,
+          brandId: this.filters.brand,
           sort: this.filters.sort,
           minPrice: this.filters.price.min,
           maxPrice: this.filters.price.max
@@ -168,7 +189,10 @@ export default {
     },
     async handleAddToCart(product) {
       try {
-        await this.addToCart({ product })
+        await this.addToCart({ 
+          product,
+          quantity: 1  // 默认添加1个
+        })
         this.$message.success('添加成功')
       } catch (error) {
         this.$message.error('添加失败：' + error.message)

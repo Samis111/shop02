@@ -58,9 +58,8 @@ export default {
 
   /**
    * 更新购物车商品数量
-   * @param {string} id 购物车项ID
-   * @param {Object} data 更新信息
-   * @param {number} data.quantity 新数量
+   * @param {number} id 购物车项ID
+   * @param {number} quantity 新数量
    * @returns {Promise} 返回更新结果
    * @example
    * {
@@ -68,17 +67,17 @@ export default {
    *   message: "更新成功"
    * }
    */
-  update(id, data) {
+  update(id, quantity) {
     return request({
       url: `/cart/${id}`,
       method: 'put',
-      data
+      data: { quantity }
     })
   },
 
   /**
    * 删除购物车商品
-   * @param {string} id 购物车项ID
+   * @param {number} id 购物车项ID
    * @returns {Promise} 返回删除结果
    * @example
    * {
