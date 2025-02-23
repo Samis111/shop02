@@ -33,24 +33,25 @@
         <!-- <router-link to="/register" class="register-btn">注册</router-link> -->
       </template>
       <template v-else>
-        <div class="user-info" @click="showUserMenu = !showUserMenu">
+        <div class="user-info" @click="handleUserMenuClick">
           <img :src="userInfo.avatar" class="avatar" alt="用户头像">
           <span>{{ userInfo.username }}</span>
           <!-- 用户菜单 -->
           <div v-show="showUserMenu" class="user-menu">
-            <router-link to="/user/profile">个人信息</router-link>
-            <router-link to="/user/orders">我的订单</router-link>
+            <router-link to="/user" @click.native="showUserMenu = false">个人中心</router-link>
+            <router-link to="/user/orders" @click.native="showUserMenu = false">我的订单</router-link>
             <a @click="handleLogout">退出登录</a>
           </div>
         </div>
       </template>
       <div class="icons">
-        <router-link to="/cart" class="cart-icon">
-          <i class="iconfont icon-cart"></i>
-          <span v-if="cartCount" class="cart-count">{{ cartCount }}</span>
+        <router-link to="/cart" class="cart-icon" @click.native="handleCartClick">
+          <el-badge :value="cartCount" :hidden="!cartCount">
+            <i class="el-icon-shopping-cart-2"></i>
+          </el-badge>
         </router-link>
         <router-link to="/favorites" class="favorite-icon">
-          <i class="iconfont icon-heart"></i>
+          <i class="el-icon-star-off"></i>
         </router-link>
       </div>
     </div>
@@ -87,13 +88,28 @@ export default {
         this.$router.push(`/search?keyword=${encodeURIComponent(this.searchKeyword)}`)
       }
     },
+    handleUserMenuClick() {
+      if (!this.isLoggedIn) {
+        this.$router.push('/login')
+        return
+      }
+      this.showUserMenu = !this.showUserMenu
+    },
     async handleLogout() {
       try {
         await this.logout()
+        this.showUserMenu = false
         this.$message.success('退出登录成功')
         this.$router.push('/login')
       } catch (error) {
         this.$message.error('退出登录失败')
+      }
+    },
+    handleCartClick() {
+      if (!this.isLoggedIn) {
+        this.$message.warning('请先登录')
+        this.$router.push('/login')
+        return false
       }
     }
   }
@@ -245,16 +261,25 @@ export default {
   display: flex;
   align-items: center;
   margin-left: 20px;
+  gap: 15px;
 }
 
 .cart-icon,
 .favorite-icon {
   position: relative;
-  margin: 0 10px;
   color: #333;
   text-decoration: none;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s;
 }
 
+.cart-icon:hover,
+.favorite-icon:hover {
+  color: #ff4d4f;
+}
+
+/* 移除旧的购物车数量样式 */
 .cart-count {
   position: absolute;
   top: -8px;

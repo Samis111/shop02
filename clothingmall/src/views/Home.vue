@@ -31,7 +31,13 @@
       <div class="container">
         <div class="section-header">
           <h2>新品上架</h2>
-          <router-link to="/products?sort=new" class="more-link">
+          <router-link 
+            :to="{ 
+              path: '/products',
+              query: { sort: 'new' }
+            }" 
+            class="more-link"
+          >
             查看更多 <i class="el-icon-arrow-right"></i>
           </router-link>
         </div>
@@ -57,7 +63,13 @@
       <div class="container">
         <div class="section-header">
           <h2>热销商品</h2>
-          <router-link to="/products?sort=sales" class="more-link">
+          <router-link 
+            :to="{ 
+              path: '/products',
+              query: { sort: 'sales' }
+            }" 
+            class="more-link"
+          >
             查看更多 <i class="el-icon-arrow-right"></i>
           </router-link>
         </div>

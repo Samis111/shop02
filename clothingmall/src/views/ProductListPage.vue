@@ -36,32 +36,63 @@
                 :class="{ active: viewMode === 'grid' }"
                 @click="viewMode = 'grid'"
               >
-                <i class="iconfont icon-grid"></i>
+                <i class="el-icon-s-grid"></i>
               </button>
               <button 
                 class="view-btn"
                 :class="{ active: viewMode === 'list' }"
                 @click="viewMode = 'list'"
               >
-                <i class="iconfont icon-list"></i>
+                <i class="el-icon-menu"></i>
               </button>
             </div>
           </div>
 
           <!-- 商品列表 -->
-          <product-list
-            :products="products"
-            :class="viewMode"
-            @add-to-cart="handleAddToCart"
-            @toggle-favorite="handleToggleFavorite"
-          />
+          <div :class="['product-list', viewMode]">
+            <div 
+              v-for="product in products" 
+              :key="product.id" 
+              class="product-card"
+              @click="goToDetail(product.id)"
+            >
+              <div class="product-image">
+                <img :src="product.url" :alt="product.name">
+              </div>
+              <div class="product-info">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <div class="product-meta">
+                  <span class="product-type">{{ product.type }}</span>
+                  <span class="product-price">¥{{ product.price.toFixed(2) }}</span>
+                </div>
+                <div class="product-actions" @click.stop>
+                  <el-button 
+                    type="primary" 
+                    size="small" 
+                    @click="handleAddToCart(product)"
+                  >
+                    加入购物车
+                  </el-button>
+                  <el-button 
+                    :type="isFavorite(product.id) ? 'danger' : 'default'"
+                    size="small"
+                    icon="el-icon-star-off"
+                    @click="handleToggleFavorite({ productId: product.id })"
+                  >
+                    {{ isFavorite(product.id) ? '已收藏' : '收藏' }}
+                  </el-button>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- 分页 -->
-          <app-pagination
-            :total="total"
+          <el-pagination
             :current-page.sync="currentPage"
             :page-size="pageSize"
-            @change="handlePageChange"
+            :total="total"
+            layout="prev, pager, next"
+            @current-change="handlePageChange"
           />
         </div>
       </div>
@@ -97,8 +128,8 @@ export default {
       pageSize: 20,
       total: 0,
       products: [],
-      category: '',
-      brands: [],  // 添加品牌列表
+      category: 'brand',
+      brands: [],
       filters: {
         brand: null,
         sort: 'default',
@@ -114,7 +145,10 @@ export default {
     ...mapGetters('favorite', ['isFavorite'])
   },
   created() {
-    this.category = this.$route.params.category
+    // 从查询参数中获取排序方式
+    if (this.$route.query.sort) {
+      this.filters.sort = this.$route.query.sort
+    }
     this.fetchInitialData()
   },
   methods: {
@@ -158,21 +192,16 @@ export default {
         }
 
         console.log('请求参数:', params)
-        console.log('当前分类:', this.category)
+        console.log('当前分类: brand')
 
-        let response
-        if (this.category) {
-          // 获取分类商品
-          response = await this.$api.product.getByCategory(this.category, params)
-        } else {
-          // 获取所有商品
-          response = await this.$api.product.list(params)
-        }
+        let response = await this.$api.product.getByCategory('brand', params)
 
         console.log('API响应:', response)
 
-        this.products = response.data.list
+        this.products = response.data.records
         this.total = response.data.total
+        this.currentPage = response.data.current
+        this.pageSize = response.data.size
       } catch (error) {
         console.error('获取商品列表失败:', error)
         this.$message.error('获取商品列表失败')
@@ -208,18 +237,23 @@ export default {
       } catch (error) {
         this.$message.error('操作失败：' + error.message)
       }
+    },
+    goToDetail(id) {
+      this.$router.push(`/products/${id}`)
     }
   },
   watch: {
-    // 监听路由参数变化
-    '$route.params.category': {
-      handler(newCategory) {
-        console.log('路由分类变化:', newCategory)
-        this.category = newCategory
+    // 只监听查询参数变化
+    '$route.query': {
+      handler(newQuery) {
+        console.log('查询参数变化:', newQuery)
+        if (newQuery.sort) {
+          this.filters.sort = newQuery.sort
+        }
         this.currentPage = 1 // 重置页码
         this.fetchProducts()
       },
-      immediate: true
+      deep: true
     }
   }
 }
@@ -299,8 +333,79 @@ export default {
   border-color: #333;
 }
 
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-image {
+  position: relative;
+  padding-top: 100%;
+}
+
+.product-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: 15px;
+}
+
+.product-name {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.product-type {
+  color: #666;
+  font-size: 14px;
+}
+
+.product-price {
+  color: #ff4d4f;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.product-actions {
+  display: flex;
+  gap: 10px;
+  z-index: 1;
+}
+
+/* 列表视图样式 */
 .product-list.list {
-  /* 列表视图样式 */
   display: block;
 }
 
@@ -317,7 +422,13 @@ export default {
 
 .product-list.list .product-info {
   flex: 1;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.product-list.list .product-actions {
+  margin-top: 15px;
 }
 
 @media (max-width: 768px) {

@@ -60,7 +60,24 @@ const routes = [
     component: UserCenter,
     meta: {
       requiresAuth: true
-    }
+    },
+    children: [
+      {
+        path: '',  // 空路径表示默认子路由
+        name: 'UserProfile',
+        component: () => import('@/views/UserProfile.vue')
+      },
+      {
+        path: 'orders',
+        name: 'UserOrders',
+        component: () => import('@/views/UserOrders.vue')
+      },
+      {
+        path: 'address',
+        name: 'UserAddress',
+        component: () => import('@/views/UserAddress.vue')
+      }
+    ]
   },
   {
     path: '/login',
@@ -79,24 +96,30 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const token = store.state.user.token
+  const isLoggedIn = store.getters['user/isLoggedIn']
+  console.log('Route guard:', { to, from, isLoggedIn })
   
   // 需要登录的页面
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!token) {
+    console.log('Route requires auth')
+    if (!isLoggedIn) {
+      console.log('Not logged in, redirecting to login')
       next({
         path: '/login',
         query: { redirect: to.fullPath }
       })
     } else {
+      console.log('User logged in, proceeding')
       next()
     }
   } else {
     // 不需要登录的页面
-    if (token && to.path === '/login') {
+    if (isLoggedIn && to.path === '/login') {
       // 已登录用户访问登录页，重定向到首页
+      console.log('Logged in user trying to access login page')
       next('/')
     } else {
+      console.log('No auth required, proceeding')
       next()
     }
   }

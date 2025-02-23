@@ -46,4 +46,43 @@ export const changePassword = (data) => {
     method: 'put',
     data
   })
+}
+
+export default {
+  /**
+   * 获取用户信息
+   * @returns {Promise} 返回用户信息
+   * @example
+   * {
+   *   code: 200,
+   *   message: "success",
+   *   data: {
+   *     id: 1,
+   *     username: "张三",
+   *     nickname: "昵称",
+   *     phone: "13800138000",
+   *     email: "example@email.com",
+   *     avatar: "头像url"
+   *   }
+   * }
+   */
+  getUserInfo() {
+    return request({
+      url: '/user/info',
+      method: 'get'
+    })
+  },
+
+  /**
+   * 更新用户信息
+   * @param {Object} data 用户信息
+   * @returns {Promise} 返回更新结果
+   */
+  updateUserInfo(data) {
+    return request({
+      url: '/user/update',
+      method: 'post',
+      data
+    })
+  }
 } 
