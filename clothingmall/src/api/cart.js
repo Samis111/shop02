@@ -50,13 +50,9 @@ export default {
    */
   add(data) {
     return request({
-      url: '/cart/add',
+      url: '/cart/save',
       method: 'post',
-      data: {
-        productId: data.productId,
-        quantity: data.quantity,
-        specs: data.specs
-      }
+      data
     })
   },
 

@@ -52,8 +52,13 @@ const actions = {
   },
 
   // 添加商品到购物车
-  async addToCart({ dispatch }, data) {
+  async addToCart({ commit, rootState }, data) {
     try {
+      // 确保有用户ID
+      if (!data.uid) {
+        data.uid = rootState.user.userInfo.id
+      }
+      console.log('Adding to cart:', data)
       const response = await cart.add(data)
       if (response.code === 200) {
         await dispatch('fetchCartItems')

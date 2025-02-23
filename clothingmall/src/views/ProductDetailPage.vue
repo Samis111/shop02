@@ -32,12 +32,14 @@
           <!-- 购买操作区 -->
           <div class="purchase-actions">
             <div class="quantity-selector">
+              <span class="label">数量：</span>
               <el-input-number 
-                v-model="quantity" 
-                :min="1" 
-                :max="99"
-                size="small"
-              />
+                v-model="quantity"
+                :min="1"
+                :max="product.stock"
+                @change="handleQuantityChange"
+              ></el-input-number>
+              <span class="stock">库存：{{ product.stock }}件</span>
             </div>
             <el-button 
               type="primary" 
@@ -75,7 +77,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
 
@@ -91,8 +93,12 @@ export default {
       product: null,
       quantity: 1,
       activeTab: 'detail',
-      isFavorite: false
+      isFavorite: false,
+      loading: false
     }
+  },
+  computed: {
+    ...mapState('user', ['userInfo'])
   },
   created() {
     this.productId = this.$route.params.id
@@ -112,14 +118,25 @@ export default {
       }
     },
     async handleAddToCart() {
+      if (!this.userInfo) {
+        this.$message.warning('请先登录')
+        this.$router.push('/login')
+        return
+      }
+
       try {
-        await this.addToCart({
-          product: this.product,
-          quantity: this.quantity
-        })
+        const cartData = {
+          uid: this.userInfo.id,
+          tid: this.product.id,
+          num: this.quantity
+        }
+
+        console.log('Adding to cart:', cartData)
+        await this.addToCart(cartData)
         this.$message.success('添加成功')
       } catch (error) {
-        this.$message.error('添加失败：' + error.message)
+        console.error('添加购物车失败:', error)
+        this.$message.error('添加失败：' + (error.message || '未知错误'))
       }
     },
     async handleToggleFavorite() {
@@ -129,6 +146,15 @@ export default {
         this.$message.success(newStatus ? '收藏成功' : '已取消收藏')
       } catch (error) {
         this.$message.error('操作失败：' + error.message)
+      }
+    },
+    handleQuantityChange(value) {
+      if (value < 1) {
+        this.quantity = 1
+        this.$message.warning('购买数量不能小于1')
+      } else if (value > this.product.stock) {
+        this.quantity = this.product.stock
+        this.$message.warning('购买数量不能超过库存')
       }
     }
   }
@@ -218,7 +244,18 @@ export default {
 }
 
 .quantity-selector {
-  width: 120px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.label {
+  color: #666;
+}
+
+.stock {
+  color: #999;
+  font-size: 14px;
 }
 
 .product-detail {
