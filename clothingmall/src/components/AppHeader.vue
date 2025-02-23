@@ -78,11 +78,18 @@ export default {
     ...mapState('user', ['userInfo']),
     ...mapState('cart', ['cartItems']),
     cartCount() {
-      return this.cartItems ? this.cartItems.length : 0
+      return this.cartItems.length
+    }
+  },
+  created() {
+    // 如果用户已登录，获取购物车数据
+    if (this.isLoggedIn) {
+      this.fetchCartData()
     }
   },
   methods: {
     ...mapActions('user', ['logout']),
+    ...mapActions('cart', ['fetchCartItems']),
     handleSearch() {
       if (this.searchKeyword.trim()) {
         this.$router.push(`/search?keyword=${encodeURIComponent(this.searchKeyword)}`)
@@ -110,6 +117,13 @@ export default {
         this.$message.warning('请先登录')
         this.$router.push('/login')
         return false
+      }
+    },
+    async fetchCartData() {
+      try {
+        await this.fetchCartItems()
+      } catch (error) {
+        console.error('获取购物车数据失败:', error)
       }
     }
   }

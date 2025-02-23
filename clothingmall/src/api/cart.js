@@ -28,9 +28,9 @@ export default {
    *   }
    * }
    */
-  list(uid) {
+  list() {
     return request({
-      url: '/cart/userFind/'+uid,
+      url: '/cart/list',
       method: 'get'
     })
   },
@@ -50,9 +50,13 @@ export default {
    */
   add(data) {
     return request({
-      url: '/cart/save',
+      url: '/cart/add',
       method: 'post',
-      data
+      data: {
+        productId: data.productId,
+        quantity: data.quantity,
+        specs: data.specs
+      }
     })
   },
 
@@ -67,11 +71,13 @@ export default {
    *   message: "更新成功"
    * }
    */
-  update(id, quantity) {
+  update(data) {
     return request({
-      url: `/cart/update`,
-      method: 'get',
-      data: { quantity }
+      url: `/cart/update/${data.id}`,
+      method: 'put',
+      data: {
+        quantity: data.quantity
+      }
     })
   },
 
@@ -85,10 +91,24 @@ export default {
    *   message: "删除成功"
    * }
    */
-  remove(id) {
+  delete(id) {
     return request({
       url: `/cart/delete/${id}`,
-      method: 'get'
+      method: 'delete'
+    })
+  },
+
+  /**
+   * 选择/取消选择商品
+   */
+  select(data) {
+    return request({
+      url: '/cart/select',
+      method: 'post',
+      data: {
+        ids: data.ids,
+        selected: data.selected
+      }
     })
   },
 
@@ -104,7 +124,7 @@ export default {
   clear() {
     return request({
       url: '/cart/clear',
-      method: 'get'
+      method: 'delete'
     })
   }
 } 
