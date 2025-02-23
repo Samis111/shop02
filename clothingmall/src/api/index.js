@@ -4,6 +4,7 @@ import user from './user'
 import cart from './cart'
 import order from './order'
 import brand from './brand'
+import address from './address'
 
 export default {
   home,
@@ -11,5 +12,6 @@ export default {
   user,
   cart,
   order,
-  brand
+  brand,
+  address
 } 

@@ -19,9 +19,17 @@ export default {
    */
   create(data) {
     return request({
-      url: '/address/add',
+      url: '/address/create',
       method: 'post',
-      data
+      data: {
+        name: data.name,
+        phone: data.phone,
+        province: data.province,
+        city: data.city,
+        district: data.district,
+        detail: data.detail,
+        isDefault: data.isDefault ? 1 : 0
+      }
     })
   },
 
@@ -32,9 +40,17 @@ export default {
    */
   update(data) {
     return request({
-      url: '/address/update',
-      method: 'post',
-      data
+      url: `/address/update/${data.id}`,
+      method: 'put',
+      data: {
+        name: data.name,
+        phone: data.phone,
+        province: data.province,
+        city: data.city,
+        district: data.district,
+        detail: data.detail,
+        isDefault: data.isDefault ? 1 : 0
+      }
     })
   },
 
@@ -46,7 +62,7 @@ export default {
   delete(id) {
     return request({
       url: `/address/delete/${id}`,
-      method: 'get'
+      method: 'delete'
     })
   },
 
@@ -57,8 +73,8 @@ export default {
    */
   setDefault(id) {
     return request({
-      url: `/address/setDefault/${id}`,
-      method: 'get'
+      url: `/address/default/${id}`,
+      method: 'put'
     })
   }
 } 

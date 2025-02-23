@@ -52,6 +52,13 @@
           <el-cascader
             v-model="editingAddress.region"
             :options="regions"
+            :props="{
+              value: 'value',
+              label: 'label',
+              children: 'children'
+            }"
+            placeholder="请选择省/市/区"
+            filterable
             @change="handleRegionChange"
           ></el-cascader>
         </el-form-item>
@@ -71,6 +78,9 @@
 </template>
 
 <script>
+import regions from '@/utils/regions'
+import areaData from 'china-area-data'
+
 export default {
   name: 'UserAddress',
   data() {
@@ -88,7 +98,7 @@ export default {
         detail: '',
         isDefault: false
       },
-      regions: [], // 省市区数据
+      regions: regions,
       rules: {
         name: [
           { required: true, message: '请输入收货人姓名', trigger: 'blur' }
@@ -98,7 +108,18 @@ export default {
           { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
         ],
         region: [
-          { required: true, message: '请选择所在地区', trigger: 'change' }
+          { 
+            required: true, 
+            message: '请选择所在地区', 
+            trigger: 'change',
+            validator: (rule, value, callback) => {
+              if (!value || value.length !== 3) {
+                callback(new Error('请选择完整的省市区'))
+              } else {
+                callback()
+              }
+            }
+          }
         ],
         detail: [
           { required: true, message: '请输入详细地址', trigger: 'blur' }
@@ -119,7 +140,40 @@ export default {
       }
     },
     handleEdit(address) {
-      this.editingAddress = { ...address }
+      // 从地址数据中提取区域编码
+      const regionCodes = []
+      if (address.province) {
+        // 查找省份代码
+        const provinceCode = Object.keys(areaData['86']).find(
+          code => areaData['86'][code] === address.province
+        )
+        if (provinceCode) {
+          regionCodes.push(provinceCode)
+          
+          // 查找城市代码
+          const cities = areaData[provinceCode]
+          const cityCode = Object.keys(cities).find(
+            code => cities[code] === address.city
+          )
+          if (cityCode) {
+            regionCodes.push(cityCode)
+            
+            // 查找区县代码
+            const areas = areaData[cityCode]
+            const areaCode = Object.keys(areas).find(
+              code => areas[code] === address.district
+            )
+            if (areaCode) {
+              regionCodes.push(areaCode)
+            }
+          }
+        }
+      }
+
+      this.editingAddress = {
+        ...address,
+        region: regionCodes
+      }
       this.showAddressDialog = true
     },
     async handleDelete(id) {
@@ -144,24 +198,90 @@ export default {
       }
     },
     handleRegionChange(value) {
-      if (value.length === 3) {
-        [this.editingAddress.province, this.editingAddress.city, this.editingAddress.district] = value
+      if (value && value.length === 3) {
+        const [provinceCode, cityCode, areaCode] = value
+        // 立即更新省市区数据
+        this.$set(this.editingAddress, 'province', areaData['86'][provinceCode])
+        this.$set(this.editingAddress, 'city', areaData[provinceCode][cityCode])
+        this.$set(this.editingAddress, 'district', areaData[cityCode][areaCode])
+        console.log('Region changed:', {
+          province: this.editingAddress.province,
+          city: this.editingAddress.city,
+          district: this.editingAddress.district
+        })
+      }
+    },
+    resetEditingAddress() {
+      this.editingAddress = {
+        id: null,
+        name: '',
+        phone: '',
+        region: [],
+        province: '',
+        city: '',
+        district: '',
+        detail: '',
+        isDefault: false
       }
     },
     async handleSaveAddress() {
       try {
         await this.$refs.addressForm.validate()
-        if (this.editingAddress.id) {
-          await this.$api.address.update(this.editingAddress)
-        } else {
-          await this.$api.address.create(this.editingAddress)
+        
+        // 检查区域是否已选择
+        if (!this.editingAddress.region || this.editingAddress.region.length !== 3) {
+          this.$message.error('请选择完整的省市区')
+          return
         }
+
+        // 确保省市区数据已正确设置
+        const [provinceCode, cityCode, areaCode] = this.editingAddress.region
+        const addressData = {
+          id: this.editingAddress.id,
+          name: this.editingAddress.name,
+          phone: this.editingAddress.phone,
+          province: areaData['86'][provinceCode],
+          city: areaData[provinceCode][cityCode],
+          district: areaData[cityCode][areaCode],
+          detail: this.editingAddress.detail,
+          isDefault: this.editingAddress.isDefault
+        }
+
+        // 打印请求数据
+        console.log('Request data:', addressData)
+
+        let response
+        if (this.editingAddress.id) {
+          response = await this.$api.address.update(addressData)
+          console.log('Update response:', response)
+        } else {
+          response = await this.$api.address.create(addressData)
+          console.log('Create response:', response)
+        }
+
+        // 检查响应状态
+        if (!response || response.code !== 200) {
+          throw new Error(response?.message || '服务器响应异常')
+        }
+        
         this.$message.success('保存成功')
         this.showAddressDialog = false
-        this.fetchAddresses()
+        this.resetEditingAddress()
+        await this.fetchAddresses()
       } catch (error) {
-        if (error !== false) {
-          this.$message.error('保存失败：' + error.message)
+        console.error('Save address error:', error)
+        if (error.response) {
+          // 服务器响应错误
+          console.error('Server error:', error.response)
+          this.$message.error(`保存失败：${error.response.data?.message || '服务器错误'}`)
+        } else if (error.request) {
+          // 请求发送失败
+          console.error('Request error:', error.request)
+          this.$message.error('保存失败：网络请求失败')
+        } else {
+          // 其他错误
+          console.error('Other error:', error)
+          this.$message.error(`保存失败：${error.message || '未知错误'}`)
         }
       }
     }
@@ -224,5 +344,9 @@ h2 {
 .address-actions {
   display: flex;
   gap: 10px;
+}
+
+.el-cascader {
+  width: 100%;
 }
 </style> 

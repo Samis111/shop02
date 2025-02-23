@@ -12,7 +12,7 @@ import '@/styles/index.scss'
 // 使用中文语言包
 Vue.use(ElementUI, { locale })
 
-// 将 API 挂载到 Vue 实例上
+// 注册 API 到 Vue 实例
 Vue.prototype.$api = api
 
 new Vue({
