@@ -34,7 +34,7 @@ public class CartController {
     }
 
     @PostMapping("save")
-    public Result save(Cart user) {
+    public Result save(@RequestBody  Cart user) {
         user.setState("0");
         boolean save = userService.save(user);
         return Result.ok();
