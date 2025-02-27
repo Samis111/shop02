@@ -56,6 +56,9 @@ public class Cart implements Serializable {
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
+    @TableField(exist = false)
+    private Trappings trappings;
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {

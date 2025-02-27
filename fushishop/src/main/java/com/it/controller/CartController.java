@@ -9,12 +9,17 @@ import com.it.service.TrappingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("Cart")
 @RestController
 public class CartController {
 
     @Autowired
     private CartService userService;
+
+    @Autowired
+    private TrappingsService trappingsService;
 
     @RequestMapping("list")
     public Result list() {
@@ -30,7 +35,15 @@ public class CartController {
 
     @RequestMapping("userFind/{uid}")
     public Result userFind(@PathVariable("uid") Integer uid) {
-        return Result.ok(userService.list(new QueryWrapper<Cart>().eq("uid",uid).eq("state",0)));
+
+        List<Cart> list = userService.list(new QueryWrapper<Cart>().eq("uid", uid).eq("state", 0));
+        for (Cart cart:list){
+
+            Trappings byId = trappingsService.getById(cart.getTid());
+            cart.setTrappings(byId);
+        }
+
+        return Result.ok(list);
     }
 
     @PostMapping("save")
