@@ -49,13 +49,21 @@ public class CartController {
     @PostMapping("save")
     public Result save(@RequestBody  Cart user) {
         user.setState("0");
-        boolean save = userService.save(user);
+        List<Cart> list = userService.list(new QueryWrapper<Cart>().eq("uid", user.getUid()).eq("state", 0));
+        if (list!=null ){
+            Cart cart = list.get(0);
+            cart.setNum( cart.getNum()+1);
+            userService.updateById(cart);
+        }else {
+            boolean save = userService.save(user);
+        }
+
         return Result.ok();
     }
 
 
     @PostMapping("update")
-    public Result update(Cart user) {
+    public Result update(@RequestBody Cart user) {
         boolean update = userService.updateById(user);
         return Result.ok();
     }
