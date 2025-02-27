@@ -1,23 +1,23 @@
 import * as userApi from '@/api/user'
 
 const state = {
-  // token: localStorage.getItem('token') || '',
-  userInfo: JSON.parse(localStorage.getItem('userInfo') || '{}')
+  userInfo: JSON.parse(localStorage.getItem('userInfo')) || null
 }
 
 const mutations = {
-  // SET_TOKEN(state, token) {
-  //   state.token = token
-  //   localStorage.setItem('token', token)
-  // },
   SET_USER_INFO(state, userInfo) {
+    if (userInfo && !userInfo.uid && userInfo.id) {
+      userInfo.uid = userInfo.id
+    }
     state.userInfo = userInfo
-    localStorage.setItem('userInfo', JSON.stringify(userInfo))
+    if (userInfo) {
+      localStorage.setItem('userInfo', JSON.stringify(userInfo))
+    } else {
+      localStorage.removeItem('userInfo')
+    }
   },
   CLEAR_USER_DATA(state) {
-    // state.token = ''
-    state.userInfo = {}
-    // localStorage.removeItem('token')
+    state.userInfo = null
     localStorage.removeItem('userInfo')
   }
 }
@@ -26,25 +26,18 @@ const actions = {
   async login({ commit }, loginData) {
     try {
       const response = await userApi.login(loginData)
-      
-      // 确保 API 返回了正确的数据结构
-      if (!response.data) {
-        throw new Error('登录接口返回数据格式错误')
+      if (response.code === 200 && response.data) {
+        const userInfo = {
+          ...response.data,
+          uid: response.data.id || response.data.uid
+        }
+        commit('SET_USER_INFO', userInfo)
+        return userInfo
+      } else {
+        throw new Error(response.message || '登录失败')
       }
-
-      const userInfo = response.data
-
-      // if (!token) {
-      //   throw new Error('登录失败：未获取到token')
-      // }
-
-      // 存储认证信息
-      // commit('SET_TOKEN', token)
-      commit('SET_USER_INFO', userInfo)
-
-      return { userInfo }
     } catch (error) {
-      console.error('登录 action 错误：', error)
+      console.error('Login error:', error)
       throw error
     }
   },
@@ -58,14 +51,18 @@ const actions = {
     }
   },
 
-  logout({ commit }) {
-    commit('CLEAR_USER_DATA')
+  async logout({ commit }) {
+    try {
+      commit('CLEAR_USER_DATA')
+    } catch (error) {
+      console.error('Logout error:', error)
+      throw error
+    }
   }
 }
 
 const getters = {
-  // isLoggedIn: state => !!state.token,
-  isLoggedIn: state => !!state.userInfo,
+  isLoggedIn: state => state.userInfo !== null,
   userInfo: state => state.userInfo
 }
 

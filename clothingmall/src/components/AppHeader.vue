@@ -83,6 +83,8 @@ export default {
   },
   created() {
     // 如果用户已登录，获取购物车数据
+    console.log(this.userInfo)
+    console.log(this.isLoggedIn)
     if (this.isLoggedIn) {
       this.fetchCartData()
     }
@@ -107,9 +109,10 @@ export default {
         await this.logout()
         this.showUserMenu = false
         this.$message.success('退出登录成功')
-        this.$router.push('/login')
+        await this.$router.replace('/login')
       } catch (error) {
-        this.$message.error('退出登录失败')
+        console.error('Logout error:', error)
+        this.$message.error('退出登录失败：' + (error.message || '未知错误'))
       }
     },
     handleCartClick() {
@@ -121,9 +124,15 @@ export default {
     },
     async fetchCartData() {
       try {
-        await this.fetchCartItems()
+        if (this.userInfo && (this.userInfo.uid || this.userInfo.id)) {
+          const userId = this.userInfo.uid || this.userInfo.id
+          console.log('Fetching cart data for user:', userId)
+          await this.fetchCartItems(userId)
+        } else {
+          console.warn('No user ID available')
+        }
       } catch (error) {
-        console.error('获取购物车数据失败:', error)
+        console.error('Failed to fetch cart data:', error)
       }
     }
   }

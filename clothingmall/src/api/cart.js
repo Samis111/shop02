@@ -28,9 +28,9 @@ export default {
    *   }
    * }
    */
-  list() {
+  list(uid) {
     return request({
-      url: '/cart/list',
+      url: `/Cart/userFind/${uid}`,
       method: 'get'
     })
   },
@@ -50,7 +50,7 @@ export default {
    */
   add(data) {
     return request({
-      url: '/cart/save',
+      url: '/Cart/save',
       method: 'post',
       data
     })

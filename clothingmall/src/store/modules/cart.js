@@ -34,10 +34,10 @@ const mutations = {
 
 const actions = {
   // 获取购物车列表
-  async fetchCartItems({ commit }) {
+  async fetchCartItems({ commit }, uid) {
     commit('SET_LOADING', true)
     try {
-      const response = await cart.list()
+      const response = await cart.list(uid)
       if (response.code === 200) {
         commit('SET_CART_ITEMS', response.data)
       } else {
@@ -61,7 +61,7 @@ const actions = {
       console.log('Adding to cart:', data)
       const response = await cart.add(data)
       if (response.code === 200) {
-        await dispatch('fetchCartItems')
+        await dispatch('fetchCartItems', data.uid)
       } else {
         throw new Error(response.message)
       }

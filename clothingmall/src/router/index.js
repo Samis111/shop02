@@ -118,6 +118,10 @@ router.beforeEach((to, from, next) => {
       // 已登录用户访问登录页，重定向到首页
       console.log('Logged in user trying to access login page')
       next('/')
+    } else if (!isLoggedIn && to.path === '/login') {
+      // 未登录用户访问登录页，直接通过
+      console.log('Not logged in user accessing login page')
+      next()
     } else {
       console.log('No auth required, proceeding')
       next()
