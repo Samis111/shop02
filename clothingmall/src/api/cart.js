@@ -69,11 +69,9 @@ export default {
    */
   update(data) {
     return request({
-      url: `/cart/update/${data.id}`,
-      method: 'put',
-      data: {
-        quantity: data.quantity
-      }
+      url: `/Cart/update`,
+      method: 'post',
+      data
     })
   },
 
@@ -89,8 +87,8 @@ export default {
    */
   delete(id) {
     return request({
-      url: `/cart/delete/${id}`,
-      method: 'delete'
+      url: `/Cart/delete/${id}`,
+      method: 'get'
     })
   },
 

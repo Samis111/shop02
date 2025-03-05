@@ -23,14 +23,14 @@
         <el-table-column label="订单信息" width="400">
           <template slot-scope="scope">
             <div class="order-info">
-              <div class="order-number">订单号：{{ scope.row.orderNo }}</div>
-              <div class="order-time">下单时间：{{ scope.row.createTime }}</div>
+              <div class="order-number">订单号：{{ scope.row.orderNo || '暂无' }}</div>
+              <div class="order-time">下单时间：{{ scope.row.createTime || '暂无' }}</div>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="金额" width="120">
           <template slot-scope="scope">
-            <span class="price">¥{{ scope.row.totalAmount.toFixed(2) }}</span>
+            <span class="price">¥{{ formatPrice(scope.row.totalAmount) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="120">
@@ -59,10 +59,13 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <!-- 空数据提示 -->
+      <el-empty v-if="!loading && (!orders || orders.length === 0)" description="暂无订单数据"></el-empty>
     </div>
 
     <!-- 分页 -->
-    <div class="pagination">
+    <div class="pagination" v-if="total > 0">
       <el-pagination
         :current-page.sync="currentPage"
         :page-size="pageSize"
@@ -75,6 +78,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'UserOrders',
   data() {
@@ -87,22 +92,50 @@ export default {
       total: 0
     }
   },
+  computed: {
+    ...mapState('user', ['userInfo'])
+  },
   created() {
-    this.fetchOrders()
+    if (this.userInfo && this.userInfo.uid) {
+      this.fetchOrders()
+    } else {
+      this.$message.warning('用户信息不完整，请重新登录')
+      this.$router.push('/login')
+    }
   },
   methods: {
+    // 格式化价格
+    formatPrice(price) {
+      return price ? Number(price).toFixed(2) : '0.00'
+    },
+
     async fetchOrders() {
+      if (!this.userInfo || !this.userInfo.uid) {
+        this.$message.warning('用户信息不完整，请重新登录')
+        this.$router.push('/login')
+        return
+      }
+
       this.loading = true
       try {
-        const response = await this.$api.order.list({
+        const response = await this.$api.order.list(this.userInfo.uid, {
           status: this.activeTab === 'all' ? '' : this.activeTab,
           page: this.currentPage,
           pageSize: this.pageSize
         })
-        this.orders = response.data.records
-        this.total = response.data.total
+        
+        if (response.code === 200) {
+          // 确保数据格式正确
+          this.orders = Array.isArray(response.data.records) ? response.data.records : []
+          this.total = response.data.total || 0
+        } else {
+          throw new Error(response.message || '获取订单列表失败')
+        }
       } catch (error) {
-        this.$message.error('获取订单列表失败：' + error.message)
+        console.error('获取订单列表失败:', error)
+        this.$message.error('获取订单列表失败：' + (error.message || '未知错误'))
+        this.orders = []
+        this.total = 0
       } finally {
         this.loading = false
       }

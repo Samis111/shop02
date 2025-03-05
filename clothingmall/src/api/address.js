@@ -5,9 +5,9 @@ export default {
    * 获取收货地址列表
    * @returns {Promise} 返回地址列表
    */
-  list() {
+  list(uid) {
     return request({
-      url: '/address/list',
+      url: `/address/${uid}`,
       method: 'get'
     })
   },
@@ -19,9 +19,10 @@ export default {
    */
   create(data) {
     return request({
-      url: '/address/create',
+      url: '/address/save',
       method: 'post',
       data: {
+        uid: data.uid,
         name: data.name,
         phone: data.phone,
         province: data.province,

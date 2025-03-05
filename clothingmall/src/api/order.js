@@ -22,7 +22,7 @@ export default {
    */
   create(data) {
     return request({
-      url: '/orders',
+      url: '/order/save',
       method: 'post',
       data
     })
@@ -36,9 +36,9 @@ export default {
    * @param {number} params.pageSize 每页数量
    * @returns {Promise} 返回订单列表
    */
-  list(params) {
+  list(uid, params) {
     return request({
-      url: '/order/list',
+      url: `/order/UserIDOrder/${uid}`,
       method: 'get',
       params
     })

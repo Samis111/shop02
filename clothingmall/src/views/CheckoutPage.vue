@@ -7,31 +7,28 @@
       <app-breadcrumb :breadcrumbs="breadcrumbs" />
       
       <div class="checkout-content">
-        <!-- 左侧内容 -->
-        <div class="main-section">
-          <!-- 收货地址 -->
-          <address-management 
-            v-model="selectedAddressId"
-            class="section-block"
-          />
-          
-          <!-- 商品信息 -->
-          <order-product-info
-            :items="orderItems"
-            :delivery-method="deliveryMethod"
-            @remark-change="handleRemarkChange"
-            class="section-block"
-          />
-        </div>
+        <!-- 收货地址 -->
+        <address-management 
+          v-model="selectedAddressId"
+          class="section-block"
+        />
         
-        <!-- 右侧订单信息 -->
-        <div class="side-section">
-          <order-summary
-            :subtotal="subtotal"
-            :shipping="shippingFee"
-            @order-submit="handleOrderSubmit"
-          />
-        </div>
+        <!-- 商品信息 -->
+        <order-product-info
+          :items="checkoutItems"
+          :delivery-method="deliveryMethod"
+          @remark-change="handleRemarkChange"
+          class="section-block"
+        />
+
+        <!-- 订单信息 -->
+        <order-summary
+          :subtotal="subtotal"
+          :shipping="shippingFee"
+          :loading="loading"
+          @order-submit="handleOrderSubmit"
+          class="section-block"
+        />
       </div>
     </div>
 
@@ -68,58 +65,56 @@ export default {
       selectedAddressId: '',
       orderRemark: '',
       deliveryMethod: '普通快递',
-      shippingFee: 0
+      shippingFee: 0,
+      loading: false
     }
   },
   computed: {
-    ...mapState('checkout', ['orderItems']),
+    ...mapState('checkout', ['checkoutItems']),
     subtotal() {
-      return this.orderItems.reduce((sum, item) => {
-        return sum + item.price * item.quantity
+      return this.checkoutItems.reduce((sum, item) => {
+        return sum + (item.trappings.price * Number(item.num))
       }, 0)
     }
   },
-  created() {
-    this.initCheckout()
+  async created() {
+    try {
+      await this.initCheckout()
+    } catch (error) {
+      this.$message.warning(error.message || '请先选择要结算的商品')
+      this.$router.replace('/cart')
+    }
   },
   methods: {
-    ...mapActions('checkout', ['initCheckout']),
+    ...mapActions('checkout', ['initCheckout', 'createOrder']),
+    
     handleRemarkChange(remark) {
       this.orderRemark = remark
     },
-    async handleOrderSubmit(orderData) {
+    
+    async handleOrderSubmit() {
       if (!this.selectedAddressId) {
         this.$message.warning('请选择收货地址')
         return
       }
       
       try {
-        const response = await this.$api.order.create({
-          ...orderData,
+        this.loading = true
+        const orderResult = await this.createOrder({
           addressId: this.selectedAddressId,
-          remark: this.orderRemark,
-          items: this.orderItems.map(item => ({
-            id: item.id,
-            quantity: item.quantity
-          }))
+          remark: this.orderRemark
         })
         
         // 跳转到支付页面
         this.$router.push({
           name: 'Payment',
-          params: { orderId: response.data.orderId }
+          params: { orderId: orderResult.orderId }
         })
       } catch (error) {
-        this.$message.error('订单提交失败')
+        this.$message.error(error.message || '订单提交失败')
+      } finally {
+        this.loading = false
       }
-    }
-  },
-  beforeRouteEnter(to, from, next) {
-    // 检查是否从购物车页面进入
-    if (from.name !== 'Cart') {
-      next('/cart')
-    } else {
-      next()
     }
   }
 }
@@ -142,24 +137,14 @@ export default {
 }
 
 .checkout-content {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 20px;
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .section-block {
-  margin-bottom: 20px;
-}
-
-.section-block:last-child {
-  margin-bottom: 0;
-}
-
-@media (max-width: 1024px) {
-  .checkout-content {
-    grid-template-columns: 1fr;
-  }
+  margin-bottom: 0;  /* 移除底部间距，使用 gap 控制间距 */
 }
 
 @media (max-width: 768px) {

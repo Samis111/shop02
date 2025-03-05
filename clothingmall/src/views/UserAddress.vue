@@ -78,6 +78,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import regions from '@/utils/regions'
 import areaData from 'china-area-data'
 
@@ -108,18 +109,7 @@ export default {
           { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
         ],
         region: [
-          { 
-            required: true, 
-            message: '请选择所在地区', 
-            trigger: 'change',
-            validator: (rule, value, callback) => {
-              if (!value || value.length !== 3) {
-                callback(new Error('请选择完整的省市区'))
-              } else {
-                callback()
-              }
-            }
-          }
+          { required: true, message: '请选择所在地区', trigger: 'change' }
         ],
         detail: [
           { required: true, message: '请输入详细地址', trigger: 'blur' }
@@ -127,16 +117,37 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState('user', ['userInfo'])
+  },
   created() {
-    this.fetchAddresses()
+    if (this.userInfo && this.userInfo.uid) {
+      this.fetchAddresses()
+    } else {
+      this.$message.warning('用户信息不完整，请重新登录')
+      this.$router.push('/login')
+    }
   },
   methods: {
     async fetchAddresses() {
+      if (!this.userInfo || !this.userInfo.uid) {
+        this.$message.warning('用户信息不完整，请重新登录')
+        this.$router.push('/login')
+        return
+      }
+
       try {
-        const response = await this.$api.address.list()
-        this.addresses = response.data
+        console.log('Fetching addresses for user:', this.userInfo.uid)
+        const response = await this.$api.address.list(this.userInfo.uid)
+        if (response.code === 200) {
+          this.addresses = response.data || []
+        } else {
+          throw new Error(response.message || '获取地址列表失败')
+        }
       } catch (error) {
-        this.$message.error('获取地址列表失败：' + error.message)
+        console.error('获取地址列表失败:', error)
+        this.$message.error('获取地址列表失败：' + (error.message || '未知错误'))
+        this.addresses = []
       }
     },
     handleEdit(address) {
@@ -238,6 +249,7 @@ export default {
         const [provinceCode, cityCode, areaCode] = this.editingAddress.region
         const addressData = {
           id: this.editingAddress.id,
+          uid: this.userInfo.uid,
           name: this.editingAddress.name,
           phone: this.editingAddress.phone,
           province: areaData['86'][provinceCode],

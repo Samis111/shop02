@@ -97,35 +97,36 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const isLoggedIn = store.getters['user/isLoggedIn']
-  console.log('Route guard:', { to, from, isLoggedIn })
+  const userInfo = store.state.user.userInfo
+  console.log('Route guard:', { to, from, isLoggedIn, userInfo })
   
   // 需要登录的页面
   if (to.matched.some(record => record.meta.requiresAuth)) {
     console.log('Route requires auth')
-    if (!isLoggedIn) {
-      console.log('Not logged in, redirecting to login')
+    if (!isLoggedIn || !userInfo || !userInfo.uid) {
+      console.log('Not logged in or invalid user info, redirecting to login')
+      // 保存当前路由，登录后跳回
       next({
         path: '/login',
         query: { redirect: to.fullPath }
       })
     } else {
-      console.log('User logged in, proceeding')
+      console.log('User logged in with valid info, proceeding')
+      next()
+    }
+  } else if (to.matched.some(record => record.meta.guest)) {
+    // 游客页面（如登录页）
+    if (isLoggedIn && userInfo && userInfo.uid) {
+      console.log('Logged in user trying to access guest page')
+      next('/')
+    } else {
+      console.log('Guest accessing guest page')
       next()
     }
   } else {
-    // 不需要登录的页面
-    if (isLoggedIn && to.path === '/login') {
-      // 已登录用户访问登录页，重定向到首页
-      console.log('Logged in user trying to access login page')
-      next('/')
-    } else if (!isLoggedIn && to.path === '/login') {
-      // 未登录用户访问登录页，直接通过
-      console.log('Not logged in user accessing login page')
-      next()
-    } else {
-      console.log('No auth required, proceeding')
-      next()
-    }
+    // 公共页面
+    console.log('Public page, proceeding')
+    next()
   }
 })
 
