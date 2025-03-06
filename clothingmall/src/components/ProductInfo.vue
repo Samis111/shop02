@@ -3,7 +3,7 @@
     <!-- 基本信息 -->
     <h1 class="product-name">{{ product.name }}</h1>
     <div class="product-brief">{{ product.brief }}</div>
-    
+
     <!-- 价格信息 -->
     <div class="price-section">
       <div class="price-info">
@@ -21,54 +21,32 @@
     <div class="select-section">
       <!-- 颜色选择 -->
       <div class="select-item">
-        
-    
+
+
       </div>
 
       <!-- 尺码选择 -->
       <div class="select-item">
-      
+
       </div>
 
       <!-- 数量选择 -->
       <div class="select-item">
         <div class="select-label">数量</div>
         <div class="quantity-selector">
-          <button 
-            class="quantity-btn"
-            :disabled="quantity <= 1"
-            @click="updateQuantity(-1)"
-          >-</button>
-          <input 
-            type="number"
-            v-model.number="quantity"
-            :min="1"
-            :max="maxQuantity"
-            @input="handleQuantityInput"
-          >
-          <button 
-            class="quantity-btn"
-            :disabled="quantity >= maxQuantity"
-            @click="updateQuantity(1)"
-          >+</button>
-       
+          <button class="quantity-btn" :disabled="quantity <= 1" @click="updateQuantity(-1)">-</button>
+          <input type="number" v-model.number="quantity" :min="1" :max="maxQuantity" @input="handleQuantityInput">
+          <button class="quantity-btn" :disabled="quantity >= maxQuantity" @click="updateQuantity(1)">+</button>
+
         </div>
       </div>
     </div>
 
     <!-- 操作按钮 -->
     <div class="action-buttons">
-      <button 
-        class="action-btn buy-now"
-        :disabled="!isValid"
-        @click="buyNow"
-      >立即购买</button>
-      <button 
-        class="action-btn add-to-cart"
-        :disabled="!isValid"
-        @click="addToCart"
-      >加入购物车</button>
-   
+      <button class="action-btn buy-now" :disabled="!isValid" @click="buyNow">立即购买</button>
+      <button class="action-btn add-to-cart" :disabled="!isValid" @click="addToCart">加入购物车</button>
+
     </div>
 
     <!-- 商品信息 -->
@@ -81,12 +59,7 @@
     </div>
 
     <!-- 尺码指南弹窗 -->
-    <el-dialog
-      title="尺码指南"
-      :visible.sync="showSizeGuide"
-      width="600px"
-      class="size-guide-dialog"
-    >
+    <el-dialog title="尺码指南" :visible.sync="showSizeGuide" width="600px" class="size-guide-dialog">
       <size-guide :category="product.category" />
     </el-dialog>
   </div>
@@ -126,10 +99,10 @@ export default {
       return Math.min(this.currentStock, 10) // 限制最大购买数量为10
     },
     isValid() {
-      return this.selectedColor && 
-             this.selectedSize && 
-             this.quantity > 0 && 
-             this.quantity <= this.maxQuantity
+      return this.selectedColor &&
+        this.selectedSize &&
+        this.quantity > 0 &&
+        this.quantity <= this.maxQuantity
     }
   },
   methods: {
@@ -159,7 +132,7 @@ export default {
     },
     async handleAddToCart() {
       if (!this.isValid) return
-      
+
       try {
         await this.addToCart({
           product: this.product,
@@ -174,7 +147,7 @@ export default {
     },
     async buyNow() {
       if (!this.isValid) return
-      
+
       try {
         // 先添加到购物车
         await this.handleAddToCart()
@@ -441,9 +414,9 @@ export default {
   .action-buttons {
     flex-wrap: wrap;
   }
-  
+
   .favorite {
     width: 100%;
   }
 }
-</style> 
+</style>

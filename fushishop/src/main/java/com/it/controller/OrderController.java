@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("order")
 @RestController
@@ -37,13 +38,21 @@ public class OrderController {
 
     @RequestMapping("save")
     public Result save(@RequestBody Order order) {
+        order.setState("0");
+
+        Map<String, Object> map = cartService.getMap(new QueryWrapper<Cart>()
+                .select("SUM(price * num) as total")
+                .eq("uid", order.getUid())
+                .eq("state", 0));
+
+        order.setCid(map.get("total") +"");
 
         boolean save = orderService.save(order);
         QueryWrapper<Cart> cartQueryWrapper = new QueryWrapper<>();
         cartQueryWrapper.eq("uid", order.getUid()).eq("state", 0);
         Cart cart = new Cart();
         cart.setState("1");
-        cart.setOid(order.getOid() + "");
+        cart.setOid(order.getId() + "");
         boolean update = cartService.update(cart, cartQueryWrapper);
 
         return Result.ok("");

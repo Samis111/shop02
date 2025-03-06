@@ -2,16 +2,11 @@
   <div class="order-management">
     <div class="section-header">
       <h3>我的订单</h3>
-      
+
       <!-- 订单状态标签 -->
       <div class="order-tabs">
-        <div 
-          v-for="tab in orderTabs"
-          :key="tab.value"
-          class="tab-item"
-          :class="{ active: currentTab === tab.value }"
-          @click="switchTab(tab.value)"
-        >
+        <div v-for="tab in orderTabs" :key="tab.value" class="tab-item" :class="{ active: currentTab === tab.value }"
+          @click="switchTab(tab.value)">
           {{ tab.label }}
           <span v-if="tab.count" class="count">({{ tab.count }})</span>
         </div>
@@ -20,46 +15,30 @@
 
     <!-- 订单列表 -->
     <div class="order-list">
-      <div 
-        v-for="order in orders" 
-        :key="order.id"
-        class="order-item"
-      >
+      <div v-for="order in orders" :key="order.id" class="order-item">
         <div class="order-header">
           <div class="order-info">
             <span class="order-id">订单号：{{ order.orderNo }}</span>
             <span class="order-time">{{ formatTime(order.createTime) }}</span>
           </div>
-          <span 
-            class="order-status"
-            :class="order.status"
-          >{{ orderStatusText[order.status] }}</span>
+          <span class="order-status" :class="order.status">{{ orderStatusText[order.status] }}</span>
         </div>
 
         <div class="order-content">
-          <div 
-            v-for="product in order.products"
-            :key="product.id"
-            class="product-item"
-          >
-            <router-link 
-              :to="{ name: 'ProductDetail', params: { id: product.productId }}"
-              class="product-image"
-            >
+          <div v-for="product in order.products" :key="product.id" class="product-item">
+            <router-link :to="{ name: 'ProductDetail', params: { id: product.productId } }" class="product-image">
               <img :src="product.image" :alt="product.name">
             </router-link>
-            
+
             <div class="product-info">
-              <router-link 
-                :to="{ name: 'ProductDetail', params: { id: product.productId }}"
-                class="product-name"
-              >{{ product.name }}</router-link>
+              <router-link :to="{ name: 'ProductDetail', params: { id: product.productId } }" class="product-name">{{
+                product.name }}</router-link>
               <div class="product-attrs">
                 <span class="attr-item">颜色：{{ product.color }}</span>
                 <span class="attr-item">尺码：{{ product.size }}</span>
               </div>
             </div>
-            
+
             <div class="product-price">
               <span class="price">¥{{ product.price }}</span>
               <span class="quantity">× {{ product.quantity }}</span>
@@ -72,45 +51,24 @@
             共 {{ order.totalQuantity }} 件商品
             实付款：<span class="total-price">¥{{ order.totalAmount }}</span>
           </div>
-          
+
           <div class="order-actions">
             <template v-if="order.status === 'pending'">
-              <button 
-                class="action-btn primary"
-                @click="goPay(order.id)"
-              >去支付</button>
-              <button 
-                class="action-btn"
-                @click="cancelOrder(order.id)"
-              >取消订单</button>
+              <button class="action-btn primary" @click="goPay(order.id)">去支付</button>
+              <button class="action-btn" @click="cancelOrder(order.id)">取消订单</button>
             </template>
-            
+
             <template v-if="order.status === 'shipped'">
-              <button 
-                class="action-btn primary"
-                @click="confirmReceive(order.id)"
-              >确认收货</button>
-              <button 
-                class="action-btn"
-                @click="viewLogistics(order.id)"
-              >查看物流</button>
+              <button class="action-btn primary" @click="confirmReceive(order.id)">确认收货</button>
+              <button class="action-btn" @click="viewLogistics(order.id)">查看物流</button>
             </template>
-            
+
             <template v-if="order.status === 'completed'">
-              <button 
-                class="action-btn"
-                @click="applyAfterSale(order.id)"
-              >申请售后</button>
-              <button 
-                class="action-btn"
-                @click="deleteOrder(order.id)"
-              >删除订单</button>
+              <button class="action-btn" @click="applyAfterSale(order.id)">申请售后</button>
+              <button class="action-btn" @click="deleteOrder(order.id)">删除订单</button>
             </template>
-            
-            <button 
-              class="action-btn"
-              @click="viewOrderDetail(order.id)"
-            >订单详情</button>
+
+            <button class="action-btn" @click="viewOrderDetail(order.id)">订单详情</button>
           </div>
         </div>
       </div>
@@ -118,13 +76,8 @@
 
     <!-- 分页器 -->
     <div class="pagination-wrapper">
-      <el-pagination
-        :current-page="currentPage"
-        :page-size="pageSize"
-        :total="total"
-        layout="prev, pager, next"
-        @current-change="handlePageChange"
-      />
+      <el-pagination :current-page="currentPage" :page-size="pageSize" :total="total" layout="prev, pager, next"
+        @current-change="handlePageChange" />
     </div>
   </div>
 </template>
@@ -171,7 +124,7 @@ export default {
           pageSize: this.pageSize,
           status: this.currentTab === 'all' ? '' : this.currentTab
         })
-        
+
         this.orders = response.data.list
         this.total = response.data.total
       } catch (error) {
@@ -299,11 +252,25 @@ export default {
   font-weight: 500;
 }
 
-.order-status.pending { color: #ff4d4f; }
-.order-status.paid { color: #1890ff; }
-.order-status.shipped { color: #52c41a; }
-.order-status.completed { color: #666; }
-.order-status.cancelled { color: #999; }
+.order-status.pending {
+  color: #ff4d4f;
+}
+
+.order-status.paid {
+  color: #1890ff;
+}
+
+.order-status.shipped {
+  color: #52c41a;
+}
+
+.order-status.completed {
+  color: #666;
+}
+
+.order-status.cancelled {
+  color: #999;
+}
 
 .order-content {
   padding: 15px;
@@ -417,33 +384,33 @@ export default {
   .order-management {
     padding: 15px;
   }
-  
+
   .order-tabs {
     overflow-x: auto;
     padding-bottom: 5px;
   }
-  
+
   .order-header,
   .order-footer {
     flex-direction: column;
     gap: 10px;
     align-items: flex-start;
   }
-  
+
   .order-actions {
     width: 100%;
     flex-wrap: wrap;
   }
-  
+
   .action-btn {
     flex: 1;
     text-align: center;
   }
-  
+
   .product-item {
     grid-template-columns: 60px 1fr;
   }
-  
+
   .product-price {
     grid-column: 1 / -1;
     text-align: left;
@@ -452,4 +419,4 @@ export default {
     align-items: center;
   }
 }
-</style> 
+</style>

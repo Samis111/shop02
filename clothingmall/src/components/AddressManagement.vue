@@ -2,10 +2,7 @@
   <div class="address-management">
     <div class="section-header">
       <h3>收货地址</h3>
-      <button 
-        class="add-address-btn"
-        @click="showAddressForm()"
-      >
+      <button class="add-address-btn" @click="showAddressForm()">
         <i class="iconfont icon-plus"></i>
         添加新地址
       </button>
@@ -13,22 +10,15 @@
 
     <!-- 地址列表 -->
     <div class="address-list">
-      <div 
-        v-for="address in addresses" 
-        :key="address.id"
-        class="address-item"
-        :class="{ active: selectedId === address.id }"
-      >
+      <div v-for="address in addresses" :key="address.id" class="address-item"
+        :class="{ active: selectedId === address.id }">
         <div class="address-content" @click="selectAddress(address.id)">
           <div class="address-header">
             <span class="name">{{ address.name }}</span>
             <span class="phone">{{ address.phone }}</span>
-            <span 
-              v-if="address.isDefault" 
-              class="default-tag"
-            >默认</span>
+            <span v-if="address.isDefault" class="default-tag">默认</span>
           </div>
-          
+
           <div class="address-detail">
             <span class="region">
               {{ address.province }} {{ address.city }} {{ address.district }}
@@ -38,67 +28,39 @@
         </div>
 
         <div class="address-actions">
-          <button 
-            class="action-btn"
-            @click="showAddressForm(address)"
-          >编辑</button>
-          <button 
-            v-if="!address.isDefault"
-            class="action-btn"
-            @click="setDefault(address.id)"
-          >设为默认</button>
-          <button 
-            v-if="!address.isDefault"
-            class="action-btn delete"
-            @click="deleteAddress(address.id)"
-          >删除</button>
+          <button class="action-btn" @click="showAddressForm(address)">编辑</button>
+          <button v-if="!address.isDefault" class="action-btn" @click="setDefault(address.id)">设为默认</button>
+          <button v-if="!address.isDefault" class="action-btn delete" @click="deleteAddress(address.id)">删除</button>
         </div>
       </div>
     </div>
 
     <!-- 地址表单弹窗 -->
-    <el-dialog
-      :title="editingAddress ? '编辑地址' : '新增地址'"
-      :visible.sync="showDialog"
-      width="500px"
-    >
-      <el-form 
-        ref="addressForm"
-        :model="addressForm"
-        :rules="rules"
-        label-width="80px"
-      >
+    <el-dialog :title="editingAddress ? '编辑地址' : '新增地址'" :visible.sync="showDialog" width="500px">
+      <el-form ref="addressForm" :model="addressForm" :rules="rules" label-width="80px">
         <el-form-item label="收货人" prop="name">
           <el-input v-model="addressForm.name" />
         </el-form-item>
-        
+
         <el-form-item label="手机号码" prop="phone">
           <el-input v-model="addressForm.phone" />
         </el-form-item>
-        
+
         <el-form-item label="所在地区" prop="region">
-          <el-cascader
-            v-model="addressForm.region"
-            :options="regionOptions"
-            placeholder="请选择省/市/区"
-          />
+          <el-cascader v-model="addressForm.region" :options="regionOptions" placeholder="请选择省/市/区" />
         </el-form-item>
-        
+
         <el-form-item label="详细地址" prop="street">
-          <el-input 
-            v-model="addressForm.street"
-            type="textarea"
-            :rows="2"
-          />
+          <el-input v-model="addressForm.street" type="textarea" :rows="2" />
         </el-form-item>
-        
+
         <el-form-item>
           <el-checkbox v-model="addressForm.isDefault">
             设为默认收货地址
           </el-checkbox>
         </el-form-item>
       </el-form>
-      
+
       <div slot="footer">
         <el-button @click="showDialog = false">取消</el-button>
         <el-button type="primary" @click="saveAddress">保存</el-button>
@@ -108,6 +70,11 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
+import regions from '@/utils/regions'
+import address from '@/api/address'
+
 export default {
   name: 'AddressManagement',
   props: {
@@ -128,6 +95,7 @@ export default {
         street: '',
         isDefault: false
       },
+      regions: regions,
       rules: {
         name: [
           { required: true, message: '请输入收货人姓名', trigger: 'blur' },
@@ -156,27 +124,38 @@ export default {
       set(value) {
         this.$emit('input', value)
       }
-    }
+    },
+    ...mapState('user', ['userInfo'])
+
   },
   created() {
     this.fetchAddresses()
     this.fetchRegionData()
+
   },
   methods: {
     async fetchAddresses() {
-      try {
+      
+    // console.log(this.userInfo)
+
+      // try {
+
+
         // TODO: 调用API获取地址列表
-        const response = await this.$api.address.getList()
+        const response = await address.list(this.userInfo.uid)
+
+        console.log(response)
+
         this.addresses = response.data
-        
+
         // 如果没有选中地址，默认选中默认地址
-        if (!this.selectedId && this.addresses.length) {
-          const defaultAddress = this.addresses.find(addr => addr.isDefault)
-          this.selectedId = defaultAddress?.id || this.addresses[0].id
-        }
-      } catch (error) {
-        this.$message.error('获取地址列表失败')
-      }
+        // if (!this.selectedId && this.addresses.length) {
+        //   const defaultAddress = this.addresses.find(addr => addr.isDefault)
+        //   this.selectedId = defaultAddress?.id || this.addresses[0].id
+        // }
+      // } catch (error) {
+      //   this.$message.error('获取地址列表失败')
+      // }
     },
     async fetchRegionData() {
       try {
@@ -211,7 +190,7 @@ export default {
     async saveAddress() {
       try {
         await this.$refs.addressForm.validate()
-        
+
         const [province, city, district] = this.addressForm.region
         const addressData = {
           ...this.addressForm,
@@ -220,7 +199,7 @@ export default {
           district
         }
         delete addressData.region
-        
+
         if (this.editingAddress) {
           // 编辑地址
           await this.$api.address.update({
@@ -233,7 +212,7 @@ export default {
           await this.$api.address.create(addressData)
           this.$message.success('地址添加成功')
         }
-        
+
         this.showDialog = false
         this.fetchAddresses()
       } catch (error) {
@@ -258,10 +237,10 @@ export default {
         await this.$confirm('确定要删除该地址吗？', '提示', {
           type: 'warning'
         })
-        
+
         await this.$api.address.delete(id)
         this.$message.success('地址已删除')
-        
+
         if (this.selectedId === id) {
           this.selectedId = ''
         }
@@ -393,9 +372,9 @@ export default {
   .address-management {
     padding: 15px;
   }
-  
+
   .address-header {
     flex-wrap: wrap;
   }
 }
-</style> 
+</style>

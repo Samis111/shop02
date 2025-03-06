@@ -1,7 +1,7 @@
 <template>
   <div class="product-list-page">
     <app-header />
-    
+
     <div class="main-content">
       <!-- 面包屑导航 -->
       <div class="breadcrumb">
@@ -13,14 +13,11 @@
           <el-breadcrumb-item v-else>全部商品</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
-      
+
       <div class="content-wrapper">
         <!-- 筛选区域 -->
         <aside class="filter-sidebar">
-          <product-filter 
-            :brands="brands"
-            @filter-change="handleFilterChange" 
-          />
+          <product-filter :brands="brands" @filter-change="handleFilterChange" />
         </aside>
 
         <!-- 商品列表区域 -->
@@ -31,18 +28,10 @@
               找到 {{ total }} 个商品
             </div>
             <div class="view-options">
-              <button 
-                class="view-btn"
-                :class="{ active: viewMode === 'grid' }"
-                @click="viewMode = 'grid'"
-              >
+              <button class="view-btn" :class="{ active: viewMode === 'grid' }" @click="viewMode = 'grid'">
                 <i class="el-icon-s-grid"></i>
               </button>
-              <button 
-                class="view-btn"
-                :class="{ active: viewMode === 'list' }"
-                @click="viewMode = 'list'"
-              >
+              <button class="view-btn" :class="{ active: viewMode === 'list' }" @click="viewMode = 'list'">
                 <i class="el-icon-menu"></i>
               </button>
             </div>
@@ -50,12 +39,7 @@
 
           <!-- 商品列表 -->
           <div :class="['product-list', viewMode]">
-            <div 
-              v-for="product in products" 
-              :key="product.id" 
-              class="product-card"
-              @click="goToDetail(product.id)"
-            >
+            <div v-for="product in products" :key="product.id" class="product-card" @click="goToDetail(product.id)">
               <div class="product-image">
                 <img :src="product.url" :alt="product.name">
               </div>
@@ -66,19 +50,11 @@
                   <span class="product-price">¥{{ product.price.toFixed(2) }}</span>
                 </div>
                 <div class="product-actions" @click.stop>
-                  <el-button 
-                    type="primary" 
-                    size="small" 
-                    @click="handleAddToCart(product)"
-                  >
+                  <el-button type="primary" size="small" @click="handleAddToCart(product)">
                     加入购物车
                   </el-button>
-                  <el-button 
-                    :type="isFavorite(product.id) ? 'danger' : 'default'"
-                    size="small"
-                    icon="el-icon-star-off"
-                    @click="handleToggleFavorite({ productId: product.id })"
-                  >
+                  <el-button :type="isFavorite(product.id) ? 'danger' : 'default'" size="small" icon="el-icon-star-off"
+                    @click="handleToggleFavorite({ productId: product.id })">
                     {{ isFavorite(product.id) ? '已收藏' : '收藏' }}
                   </el-button>
                 </div>
@@ -87,13 +63,8 @@
           </div>
 
           <!-- 分页 -->
-          <el-pagination
-            :current-page.sync="currentPage"
-            :page-size="pageSize"
-            :total="total"
-            layout="prev, pager, next"
-            @current-change="handlePageChange"
-          />
+          <el-pagination :current-page.sync="currentPage" :page-size="pageSize" :total="total"
+            layout="prev, pager, next" @current-change="handlePageChange" />
         </div>
       </div>
     </div>
@@ -110,6 +81,10 @@ import AppPagination from '@/components/AppPagination.vue'
 import ProductFilter from '@/components/ProductFilter.vue'
 import ProductList from '@/components/ProductList.vue'
 import { mapActions, mapGetters } from 'vuex'
+
+import cart from '@/api/cart'
+
+import { mapState } from 'vuex'
 
 export default {
   name: 'ProductListPage',
@@ -142,7 +117,8 @@ export default {
   },
   computed: {
     ...mapGetters('cart', ['totalCount']),
-    ...mapGetters('favorite', ['isFavorite'])
+    ...mapGetters('favorite', ['isFavorite']),
+    ...mapState('user', ['userInfo'])
   },
   created() {
     // 从查询参数中获取排序方式
@@ -152,7 +128,7 @@ export default {
     this.fetchInitialData()
   },
   methods: {
-    ...mapActions('cart', ['addToCart']),
+    // ...mapActions('cart', ['addToCart']),
     ...mapActions('favorite', ['toggleFavorite']),
     getCategoryName(category) {
       const categoryMap = {
@@ -217,15 +193,18 @@ export default {
       this.fetchProducts()
     },
     async handleAddToCart(product) {
-      try {
-        await this.addToCart({ 
-          product,
-          quantity: 1  // 默认添加1个
-        })
-        this.$message.success('添加成功')
-      } catch (error) {
-        this.$message.error('添加失败：' + error.message)
-      }
+
+   
+      // try {
+      await cart.add({
+        uid: this.userInfo.id,
+        tid: product.id,
+        num: 1
+      })
+      this.$message.success('添加成功')
+      // } catch (error) {
+      //   this.$message.error('添加失败：' + error.message)
+      // }
     },
     async handleToggleFavorite({ productId }) {
       try {
@@ -264,7 +243,8 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-top: 60px;  /* 为固定头部留出空间 */
+  padding-top: 60px;
+  /* 为固定头部留出空间 */
 }
 
 .main-content {
@@ -344,7 +324,7 @@ export default {
   background: #fff;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s;
   cursor: pointer;
 }
@@ -449,4 +429,4 @@ export default {
     padding-top: 100%;
   }
 }
-</style> 
+</style>

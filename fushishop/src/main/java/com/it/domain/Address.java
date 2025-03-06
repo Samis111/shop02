@@ -30,6 +30,21 @@ public class Address implements Serializable {
      */
     private String address;
 
+    private String phone;
+
+    private String city;
+
+    private String detail;
+
+    private String district;
+
+    private String isDefault;
+
+    private String name;
+
+    private String province;
+
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

@@ -1,15 +1,12 @@
 <template>
   <div class="user-center">
     <app-header />
-    
+
     <div class="main-content">
       <!-- 侧边栏导航 -->
       <aside class="sidebar">
         <h2>个人中心</h2>
-        <el-menu
-          :default-active="$route.path"
-          router
-        >
+        <el-menu :default-active="$route.path" router>
           <el-menu-item index="/user">
             <i class="el-icon-user"></i>
             <span>个人信息</span>
@@ -76,7 +73,7 @@ export default {
   flex-shrink: 0;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 20px 0;
 }
 

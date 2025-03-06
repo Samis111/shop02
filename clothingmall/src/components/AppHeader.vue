@@ -34,7 +34,7 @@
       </template>
       <template v-else>
         <div class="user-info" @click="handleUserMenuClick">
-          <img :src="userInfo.avatar" class="avatar" alt="用户头像">
+          <img :src="userInfo.url" class="avatar" alt="用户头像">
           <span>{{ userInfo.username }}</span>
           <!-- 用户菜单 -->
           <div v-show="showUserMenu" class="user-menu">

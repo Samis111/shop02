@@ -29,7 +29,7 @@ public class Order implements Serializable {
     /**
      * 
      */
-    private Integer cid;
+    private String cid;
 
     /**
      * 

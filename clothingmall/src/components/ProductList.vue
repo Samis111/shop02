@@ -2,57 +2,35 @@
   <div class="product-list">
     <!-- 商品网格 -->
     <div class="product-grid">
-      <div 
-        v-for="product in products" 
-        :key="product.id" 
-        class="product-card"
-        @click="goToDetail(product.id)"
-      >
+      <div v-for="product in products" :key="product.id" class="product-card" @click="goToDetail(product.id)">
         <div class="product-image">
           <img :src="product.image" :alt="product.name">
           <div class="product-tags" v-if="product.tags && product.tags.length">
-            <span 
-              v-for="tag in product.tags" 
-              :key="tag"
-              class="tag"
-            >{{ tag }}</span>
+            <span v-for="tag in product.tags" :key="tag" class="tag">{{ tag }}</span>
           </div>
           <div class="quick-actions">
-            <button 
-              @click.stop="addToCart(product)" 
-              class="action-btn"
-            >
+            <button @click.stop="addToCart(product)" class="action-btn">
               <i class="iconfont icon-cart"></i>
               加入购物车
             </button>
-            <button 
-              @click.stop="toggleFavorite(product)"
-              class="action-btn"
-              :class="{ active: isFavorite(product.id) }"
-            >
+            <button @click.stop="toggleFavorite(product)" class="action-btn"
+              :class="{ active: isFavorite(product.id) }">
               <i class="iconfont" :class="isFavorite(product.id) ? 'icon-heart-filled' : 'icon-heart'"></i>
               {{ isFavorite(product.id) ? '已收藏' : '收藏' }}
             </button>
           </div>
         </div>
-        
+
         <div class="product-info">
-          <router-link 
-            :to="{ name: 'ProductDetail', params: { id: product.id }}" 
-            class="product-name"
-          >
+          <router-link :to="{ name: 'ProductDetail', params: { id: product.id } }" class="product-name">
             {{ product.name }}
           </router-link>
           <div class="product-brief">
             <p class="description">{{ product.description }}</p>
             <div class="rating">
               <span class="stars">
-                <i 
-                  v-for="n in 5" 
-                  :key="n"
-                  class="iconfont"
-                  :class="n <= product.rating ? 'icon-star-filled' : 'icon-star'"
-                ></i>
+                <i v-for="n in 5" :key="n" class="iconfont"
+                  :class="n <= product.rating ? 'icon-star-filled' : 'icon-star'"></i>
               </span>
               <span class="rating-count">({{ product.ratingCount }})</span>
             </div>
@@ -135,7 +113,7 @@ export default {
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .product-image {
@@ -163,7 +141,7 @@ export default {
 
 .tag {
   padding: 2px 8px;
-  background: rgba(255,0,0,0.8);
+  background: rgba(255, 0, 0, 0.8);
   color: white;
   border-radius: 4px;
   font-size: 12px;
@@ -175,7 +153,7 @@ export default {
   left: 0;
   right: 0;
   padding: 10px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   transform: translateY(100%);
   transition: transform 0.3s;
   z-index: 1;
@@ -318,4 +296,4 @@ export default {
     font-size: 16px;
   }
 }
-</style> 
+</style>

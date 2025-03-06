@@ -1,7 +1,7 @@
 <template>
   <div class="home-page">
     <app-header />
-    
+
     <!-- 轮播图 -->
     <div class="banner-section">
       <el-carousel height="500px">
@@ -14,14 +14,9 @@
     <!-- 分类导航 -->
     <div class="category-nav">
       <div class="container">
-        <div 
-          v-for="category in categories" 
-          :key="category.id"
-          class="category-item"
-          @click="goToCategory(category.id)"
-        >
-          <img :src="category.icon" :alt="category.name">
-          <span>{{ category.name }}</span>
+        <div v-for="category in categories" :key="category.id" class="category-item" @click="goToCategory(category.id)">
+          <img :src="category.logo" :alt="category.type">
+          <span>{{ category.type }}</span>
         </div>
       </div>
     </div>
@@ -31,18 +26,16 @@
       <div class="container">
         <div class="section-header">
           <h2>新品上架</h2>
-          <router-link 
-            :to="{ 
-              path: '/products',
-              query: { sort: 'new' }
-            }" 
-            class="more-link"
-          >
+          <router-link :to="{
+            path: '/products',
+            query: { sort: 'new' }
+          }" class="more-link">
             查看更多 <i class="el-icon-arrow-right"></i>
           </router-link>
         </div>
         <div class="product-grid">
-          <div v-for="product in newProducts" :key="product.id" class="product-card" @click="$router.push(`/products/${product.id}`)">
+          <div v-for="product in newProducts" :key="product.id" class="product-card"
+            @click="$router.push(`/products/${product.id}`)">
             <div class="product-image">
               <img :src="product.url" :alt="product.name">
             </div>
@@ -63,18 +56,16 @@
       <div class="container">
         <div class="section-header">
           <h2>热销商品</h2>
-          <router-link 
-            :to="{ 
-              path: '/products',
-              query: { sort: 'sales' }
-            }" 
-            class="more-link"
-          >
+          <router-link :to="{
+            path: '/products',
+            query: { sort: 'sales' }
+          }" class="more-link">
             查看更多 <i class="el-icon-arrow-right"></i>
           </router-link>
         </div>
         <div class="product-grid">
-          <div v-for="product in hotProducts" :key="product.id" class="product-card" @click="$router.push(`/products/${product.id}`)">
+          <div v-for="product in hotProducts" :key="product.id" class="product-card"
+            @click="$router.push(`/products/${product.id}`)">
             <div class="product-image">
               <img :src="product.url" :alt="product.name">
             </div>
@@ -143,12 +134,12 @@ export default {
       }
     },
     async fetchCategories() {
-      try {
-        const response = await this.$api.category.list()
+    
+        const response = await this.$api.brand.list()
         this.categories = response.data
-      } catch (error) {
-        console.error('获取分类失败:', error)
-      }
+
+        
+      
     },
     async fetchNewProducts() {
       this.newProductsLoading = true
@@ -280,20 +271,20 @@ export default {
   .banner-section {
     margin-bottom: 20px;
   }
-  
+
   .container {
     padding: 0 10px;
   }
-  
+
   .category-nav {
     margin-bottom: 20px;
     padding: 15px 0;
   }
-  
+
   .section {
     margin-bottom: 20px;
   }
-  
+
   .section-header h2 {
     font-size: 20px;
   }
@@ -319,7 +310,7 @@ export default {
   background: #fff;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s;
   cursor: pointer;
 }
@@ -370,4 +361,4 @@ export default {
   font-weight: bold;
   font-size: 16px;
 }
-</style> 
+</style>

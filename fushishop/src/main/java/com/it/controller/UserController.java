@@ -32,14 +32,14 @@ public class UserController {
     }
 
     @PostMapping("save")
-    public Result save(User user) {
+    public Result save(@RequestBody User user) {
         boolean save = userService.save(user);
         return Result.ok();
     }
 
 
     @PostMapping("update")
-    public Result update(User user) {
+    public Result update(@RequestBody User user) {
         boolean update = userService.updateById(user);
         return Result.ok();
     }

@@ -1,7 +1,7 @@
 <template>
   <div class="user-orders">
     <h2>我的订单</h2>
-    
+
     <!-- 订单状态标签 -->
     <div class="order-tabs">
       <el-tabs v-model="activeTab" @tab-click="handleTabClick">
@@ -15,16 +15,12 @@
 
     <!-- 订单列表 -->
     <div class="order-list">
-      <el-table
-        v-loading="loading"
-        :data="orders"
-        style="width: 100%"
-      >
+      <el-table v-loading="loading" :data="orders" style="width: 100%">
         <el-table-column label="订单信息" width="400">
           <template slot-scope="scope">
             <div class="order-info">
-              <div class="order-number">订单号：{{ scope.row.orderNo || '暂无' }}</div>
-              <div class="order-time">下单时间：{{ scope.row.createTime || '暂无' }}</div>
+              <div class="order-number">订单号：{{ scope.row.id || '暂无' }}</div>
+              <div class="order-time">下单时间：{{ scope.row.thistime || '暂无' }}</div>
             </div>
           </template>
         </el-table-column>
@@ -35,25 +31,18 @@
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
-            <el-tag :type="getStatusType(scope.row.status)">
-              {{ getStatusText(scope.row.status) }}
+            <el-tag :type="getStatusType(scope.row.state)">
+              {{ getStatusText(scope.row.state) }}
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button 
-              size="small"
-              @click="viewOrderDetail(scope.row.id)"
-            >
+            <el-button size="small" @click="viewOrderDetail(scope.row.id)">
               查看详情
             </el-button>
-            <el-button 
-              v-if="scope.row.status === 'unpaid'"
-              type="primary" 
-              size="small"
-              @click="handlePay(scope.row.id)"
-            >
+            <el-button v-if="scope.row.status === 'unpaid'" type="primary" size="small"
+              @click="handlePay(scope.row.id)">
               去支付
             </el-button>
           </template>
@@ -66,13 +55,8 @@
 
     <!-- 分页 -->
     <div class="pagination" v-if="total > 0">
-      <el-pagination
-        :current-page.sync="currentPage"
-        :page-size="pageSize"
-        :total="total"
-        layout="prev, pager, next"
-        @current-change="handlePageChange"
-      />
+      <el-pagination :current-page.sync="currentPage" :page-size="pageSize" :total="total" layout="prev, pager, next"
+        @current-change="handlePageChange" />
     </div>
   </div>
 </template>
@@ -123,10 +107,10 @@ export default {
           page: this.currentPage,
           pageSize: this.pageSize
         })
-        
+
         if (response.code === 200) {
           // 确保数据格式正确
-          this.orders = Array.isArray(response.data.records) ? response.data.records : []
+          this.orders = response.data
           this.total = response.data.total || 0
         } else {
           throw new Error(response.message || '获取订单列表失败')
@@ -181,7 +165,7 @@ export default {
   padding: 20px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
@@ -218,4 +202,4 @@ h2 {
   margin-top: 20px;
   text-align: right;
 }
-</style> 
+</style>

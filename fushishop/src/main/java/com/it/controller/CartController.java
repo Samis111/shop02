@@ -25,7 +25,7 @@ public class CartController {
     public Result list() {
 
 
-        return Result.ok( userService.list());
+        return Result.ok(userService.list());
     }
 
     @RequestMapping("find/{Uid}")
@@ -37,7 +37,7 @@ public class CartController {
     public Result userFind(@PathVariable("uid") Integer uid) {
 
         List<Cart> list = userService.list(new QueryWrapper<Cart>().eq("uid", uid).eq("state", 0));
-        for (Cart cart:list){
+        for (Cart cart : list) {
 
             Trappings byId = trappingsService.getById(cart.getTid());
             cart.setTrappings(byId);
@@ -47,14 +47,19 @@ public class CartController {
     }
 
     @PostMapping("save")
-    public Result save(@RequestBody  Cart user) {
+    public Result save(@RequestBody Cart user) {
         user.setState("0");
-        List<Cart> list = userService.list(new QueryWrapper<Cart>().eq("uid", user.getUid()).eq("state", 0));
-        if (list!=null ){
+        List<Cart> list = userService.list(
+                new QueryWrapper<Cart>().eq("uid", user.getUid())
+                        .eq("state", 0).eq("tid",user.getTid()));
+        if (list != null && list.size() != 0) {
             Cart cart = list.get(0);
-            cart.setNum( cart.getNum()+1);
+            cart.setNum(cart.getNum() + 1);
             userService.updateById(cart);
-        }else {
+        } else {
+
+            Trappings byId = trappingsService.getById(user.getTid());
+            user.setPrice(byId.getPrice());
             boolean save = userService.save(user);
         }
 

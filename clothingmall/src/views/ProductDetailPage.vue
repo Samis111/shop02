@@ -28,32 +28,20 @@
             <span class="product-type">{{ product.type }}</span>
             <span class="product-price">¥{{ product.price.toFixed(2) }}</span>
           </div>
-          
+
           <!-- 购买操作区 -->
           <div class="purchase-actions">
             <div class="quantity-selector">
               <span class="label">数量：</span>
-              <el-input-number 
-                v-model="quantity"
-                :min="1"
-                :max="product.stock"
-                @change="handleQuantityChange"
-              ></el-input-number>
+              <el-input-number v-model="quantity" :min="1" :max="product.stock"
+                @change="handleQuantityChange"></el-input-number>
               <span class="stock">库存：{{ product.stock }}件</span>
             </div>
-            <el-button 
-              type="primary" 
-              size="large"
-              @click="handleAddToCart"
-            >
+            <el-button type="primary" size="large" @click="handleAddToCart">
               加入购物车
             </el-button>
-            <el-button 
-              :type="isFavorite ? 'danger' : 'default'"
-              size="large"
-              icon="el-icon-star-off"
-              @click="handleToggleFavorite"
-            >
+            <el-button :type="isFavorite ? 'danger' : 'default'" size="large" icon="el-icon-star-off"
+              @click="handleToggleFavorite">
               {{ isFavorite ? '已收藏' : '收藏' }}
             </el-button>
           </div>
@@ -107,7 +95,7 @@ export default {
   methods: {
     ...mapActions('cart', ['addToCart']),
     ...mapActions('favorite', ['toggleFavorite']),
-    
+
     async fetchProductDetail() {
       try {
         const response = await this.$api.product.getDetail(this.productId)
@@ -188,7 +176,7 @@ export default {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .product-gallery {
@@ -261,7 +249,7 @@ export default {
 .product-detail {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="order-summary">
     <h3>订单信息</h3>
-    
+
     <div class="summary-content">
       <div class="summary-item">
         <span>商品总额</span>
@@ -18,12 +18,7 @@
     </div>
 
     <div class="submit-section">
-      <el-button 
-        type="primary" 
-        size="large" 
-        :loading="loading"
-        @click="$emit('order-submit')"
-      >
+      <el-button type="primary" size="large" :loading="loading" @click="$emit('order-submit')">
         提交订单
       </el-button>
     </div>
@@ -55,7 +50,7 @@ export default {
   background: #fff;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 h3 {
@@ -101,4 +96,4 @@ h3 {
 .submit-section .el-button {
   width: 100%;
 }
-</style> 
+</style>

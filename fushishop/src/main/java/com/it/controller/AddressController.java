@@ -29,14 +29,14 @@ public class AddressController {
         return Result.ok();
     }
 
-    @PostMapping("/update")
-    public Result update(@RequestBody Address address) {
-
+    @PutMapping("/update/{id}")
+    public Result update(@RequestBody Address address,@PathVariable("id")Integer id) {
+        address.setId(id);
         boolean save = addressService.updateById(address);
         return Result.ok();
     }
 
-    @PostMapping("/del/{id}")
+    @DeleteMapping("/delete/{id}")
     public Result del(@PathVariable("id")Integer id) {
 
         boolean save = addressService.removeById(id);

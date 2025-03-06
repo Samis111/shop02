@@ -1,7 +1,7 @@
 <template>
   <div class="user-address">
     <h2>收货地址管理</h2>
-    
+
     <!-- 添加地址按钮 -->
     <div class="address-actions">
       <el-button type="primary" @click="showAddressDialog = true">
@@ -25,11 +25,7 @@
         <div class="address-actions">
           <el-button type="text" @click="handleEdit(address)">编辑</el-button>
           <el-button type="text" @click="handleDelete(address.id)">删除</el-button>
-          <el-button 
-            type="text" 
-            v-if="!address.isDefault"
-            @click="handleSetDefault(address.id)"
-          >
+          <el-button type="text" v-if="!address.isDefault" @click="handleSetDefault(address.id)">
             设为默认
           </el-button>
         </div>
@@ -37,10 +33,7 @@
     </div>
 
     <!-- 地址编辑对话框 -->
-    <el-dialog 
-      :title="editingAddress.id ? '编辑地址' : '新增地址'" 
-      :visible.sync="showAddressDialog"
-    >
+    <el-dialog :title="editingAddress.id ? '编辑地址' : '新增地址'" :visible.sync="showAddressDialog">
       <el-form :model="editingAddress" :rules="rules" ref="addressForm" label-width="100px">
         <el-form-item label="收货人" prop="name">
           <el-input v-model="editingAddress.name"></el-input>
@@ -49,18 +42,11 @@
           <el-input v-model="editingAddress.phone"></el-input>
         </el-form-item>
         <el-form-item label="所在地区" prop="region">
-          <el-cascader
-            v-model="editingAddress.region"
-            :options="regions"
-            :props="{
-              value: 'value',
-              label: 'label',
-              children: 'children'
-            }"
-            placeholder="请选择省/市/区"
-            filterable
-            @change="handleRegionChange"
-          ></el-cascader>
+          <el-cascader v-model="editingAddress.region" :options="regions" :props="{
+            value: 'value',
+            label: 'label',
+            children: 'children'
+          }" placeholder="请选择省/市/区" filterable @change="handleRegionChange"></el-cascader>
         </el-form-item>
         <el-form-item label="详细地址" prop="detail">
           <el-input type="textarea" v-model="editingAddress.detail"></el-input>
@@ -160,7 +146,7 @@ export default {
         )
         if (provinceCode) {
           regionCodes.push(provinceCode)
-          
+
           // 查找城市代码
           const cities = areaData[provinceCode]
           const cityCode = Object.keys(cities).find(
@@ -168,7 +154,7 @@ export default {
           )
           if (cityCode) {
             regionCodes.push(cityCode)
-            
+
             // 查找区县代码
             const areas = areaData[cityCode]
             const areaCode = Object.keys(areas).find(
@@ -238,7 +224,7 @@ export default {
     async handleSaveAddress() {
       try {
         await this.$refs.addressForm.validate()
-        
+
         // 检查区域是否已选择
         if (!this.editingAddress.region || this.editingAddress.region.length !== 3) {
           this.$message.error('请选择完整的省市区')
@@ -275,7 +261,7 @@ export default {
         if (!response || response.code !== 200) {
           throw new Error(response?.message || '服务器响应异常')
         }
-        
+
         this.$message.success('保存成功')
         this.showAddressDialog = false
         this.resetEditingAddress()
@@ -306,7 +292,7 @@ export default {
   padding: 20px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
@@ -361,4 +347,4 @@ h2 {
 .el-cascader {
   width: 100%;
 }
-</style> 
+</style>
