@@ -105,9 +105,9 @@ export default {
           remark: this.orderRemark
         })
         
-        // 跳转到支付页面
+        // 跳转到支付完成页面
         this.$router.push({
-          name: 'Payment',
+          name: 'PaymentSuccess',
           params: { orderId: orderResult.orderId }
         })
       } catch (error) {

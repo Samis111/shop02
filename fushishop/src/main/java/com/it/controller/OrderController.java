@@ -45,17 +45,21 @@ public class OrderController {
                 .eq("uid", order.getUid())
                 .eq("state", 0));
 
-        order.setCid(map.get("total") +"");
+       try {
+           order.setCid(map.get("total") +"");
 
-        boolean save = orderService.save(order);
-        QueryWrapper<Cart> cartQueryWrapper = new QueryWrapper<>();
-        cartQueryWrapper.eq("uid", order.getUid()).eq("state", 0);
-        Cart cart = new Cart();
-        cart.setState("1");
-        cart.setOid(order.getId() + "");
-        boolean update = cartService.update(cart, cartQueryWrapper);
+           boolean save = orderService.save(order);
+           QueryWrapper<Cart> cartQueryWrapper = new QueryWrapper<>();
+           cartQueryWrapper.eq("uid", order.getUid()).eq("state", 0);
+           Cart cart = new Cart();
+           cart.setState("1");
+           cart.setOid(order.getId() + "");
+           boolean update = cartService.update(cart, cartQueryWrapper);
 
-        return Result.ok("");
+           return Result.ok("");
+       }catch (Exception e){
+           return Result.fail("");
+       }
     }
 
     @RequestMapping("update")

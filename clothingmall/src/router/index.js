@@ -86,48 +86,95 @@ const routes = [
     meta: {
       guest: true // 只允许未登录用户访问
     }
+  },
+  {
+    path: '/payment/success/:orderId',
+    name: 'PaymentSuccess',
+    component: () => import('@/views/PaymentSuccess.vue'),
+    props: true,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/order/:id',
+    name: 'OrderDetail',
+    component: () => import('@/views/OrderDetail.vue'),
+    props: true,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import('@/views/admin/Layout.vue'),
+    meta: { requiresAdmin: true },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'AdminDashboard',
+        component: () => import('@/views/admin/Dashboard.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'brands',
+        name: 'AdminBrands',
+        component: () => import('@/views/admin/BrandManagement.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'products',
+        name: 'AdminProducts',
+        component: () => import('@/views/admin/ProductManagement.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'users',
+        name: 'AdminUsers',
+        component: () => import('@/views/admin/UserManagement.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'banners',
+        name: 'AdminBanners',
+        component: () => import('@/views/admin/BannerManagement.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'analytics',
+        name: 'AdminAnalytics',
+        component: () => import('@/views/admin/analytics/ProductAnalytics.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'analytics/products',
+        name: 'AdminProductsAnalytics',
+        component: () => import('@/views/admin/analytics/ProductAnalytics.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'analytics/monthly',
+        name: 'AdminMonthlyAnalytics',
+        component: () => import('@/views/admin/analytics/MonthlyAnalytics.vue'),
+        meta: { requiresAdmin: true }
+      },
+      {
+        path: 'analytics/yearly',
+        name: 'AdminYearlyAnalytics',
+        component: () => import('@/views/admin/analytics/YearlyAnalytics.vue'),
+        meta: { requiresAdmin: true }
+      }
+      
+    ]
   }
+
 ]
 
 const router = new VueRouter({
   mode: 'hash',
   base: process.env.BASE_URL,
   routes
-})
-
-router.beforeEach((to, from, next) => {
-  const isLoggedIn = store.getters['user/isLoggedIn']
-  const userInfo = store.state.user.userInfo
-  console.log('Route guard:', { to, from, isLoggedIn, userInfo })
-  
-  // 需要登录的页面
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    console.log('Route requires auth')
-    if (!isLoggedIn || !userInfo || !userInfo.uid) {
-      console.log('Not logged in or invalid user info, redirecting to login')
-      // 保存当前路由，登录后跳回
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      })
-    } else {
-      console.log('User logged in with valid info, proceeding')
-      next()
-    }
-  } else if (to.matched.some(record => record.meta.guest)) {
-    // 游客页面（如登录页）
-    if (isLoggedIn && userInfo && userInfo.uid) {
-      console.log('Logged in user trying to access guest page')
-      next('/')
-    } else {
-      console.log('Guest accessing guest page')
-      next()
-    }
-  } else {
-    // 公共页面
-    console.log('Public page, proceeding')
-    next()
-  }
 })
 
 export default router

@@ -2,33 +2,44 @@ import router from './index'
 import store from '@/store'
 import { Message } from 'element-ui'
 
-router.beforeEach(async (to, from, next) => {
-  // 判断该路由是否需要登录权限
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = store.getters['user/isLoggedIn']
+  const userInfo = store.state.user.userInfo
+  console.log('Route guard:', { to, from, isLoggedIn, userInfo })
+  
+  // 需要登录的页面
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    // 判断当前是否已登录
-    const isLoggedIn = store.getters['user/isLoggedIn']
-    
-    if (!isLoggedIn) {
-      Message.warning('请先登录')
+    console.log('Route requires auth')
+    if (!isLoggedIn || !userInfo || !userInfo.uid) {
+      console.log('Not logged in or invalid user info, redirecting to login')
+      // 保存当前路由，登录后跳回
       next({
         path: '/login',
         query: { redirect: to.fullPath }
       })
     } else {
-      next()
+      console.log('User logged in with valid info, proceeding')
+      // 管理员路由检查
+      const isAdminRoute = to.matched.some(record => record.meta.requiresAdmin)
+      if (isAdminRoute) {
+        console.log('Redirecting to admin dashboard')
+        next('/admin/dashboard')
+      } else {
+        next()
+      }
     }
-  } 
-  // 判断该路由是否只允许未登录用户访问
-  else if (to.matched.some(record => record.meta.guest)) {
-    const isLoggedIn = store.getters['user/isLoggedIn']
-    
-    if (isLoggedIn) {
+  } else if (to.matched.some(record => record.meta.guest)) {
+    // 游客页面（如登录页）
+    if (isLoggedIn && userInfo && userInfo.uid) {
+      console.log('Logged in user trying to access guest page')
       next('/')
     } else {
+      console.log('Guest accessing guest page')
       next()
     }
-  }
-  else {
+  } else {
+    // 公共页面
+    console.log('Public page, proceeding')
     next()
   }
-}) 
+})

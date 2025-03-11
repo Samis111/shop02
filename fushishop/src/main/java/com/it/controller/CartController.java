@@ -54,7 +54,7 @@ public class CartController {
                         .eq("state", 0).eq("tid",user.getTid()));
         if (list != null && list.size() != 0) {
             Cart cart = list.get(0);
-            cart.setNum(cart.getNum() + 1);
+            cart.setNum(Integer.valueOf(cart.getNum()) + 1+"");
             userService.updateById(cart);
         } else {
 
