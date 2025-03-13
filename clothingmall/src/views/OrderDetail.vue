@@ -1,7 +1,7 @@
 <template>
   <div class="order-detail">
     <app-header />
-    
+
     <div class="main-content">
       <!-- 面包屑导航 -->
       <div class="breadcrumb">
@@ -229,7 +229,7 @@ export default {
   margin-bottom: 20px;
 }
 
-.detail-content > div {
+.detail-content>div {
   background: #fff;
   border-radius: 8px;
   padding: 20px;
@@ -242,19 +242,19 @@ export default {
     display: flex;
     align-items: center;
     margin-bottom: 30px;
-    
+
     i {
       font-size: 40px;
       color: #409EFF;
       margin-right: 20px;
     }
-    
+
     .status-text {
       h3 {
         margin: 0 0 10px;
         font-size: 18px;
       }
-      
+
       p {
         margin: 0;
         color: #666;
@@ -266,7 +266,7 @@ export default {
 .info-list {
   .info-item {
     margin-bottom: 10px;
-    
+
     .label {
       color: #666;
       margin-right: 10px;
@@ -292,14 +292,15 @@ export default {
     font-weight: bold;
     margin-bottom: 5px;
   }
-  
+
   .product-type {
     color: #666;
     font-size: 14px;
   }
 }
 
-.price, .subtotal {
+.price,
+.subtotal {
   color: #ff4d4f;
   font-weight: bold;
 }
@@ -308,16 +309,16 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  
+
   .total-amount {
     font-size: 16px;
-    
+
     .price {
       font-size: 20px;
       margin-left: 10px;
     }
   }
-  
+
   .action-buttons {
     display: flex;
     gap: 10px;
@@ -328,15 +329,15 @@ export default {
   .action-card {
     flex-direction: column;
     gap: 20px;
-    
+
     .action-buttons {
       width: 100%;
       flex-direction: column;
-      
+
       .el-button {
         width: 100%;
       }
     }
   }
 }
-</style> 
+</style>

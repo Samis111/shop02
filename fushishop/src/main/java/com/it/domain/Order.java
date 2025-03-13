@@ -47,6 +47,9 @@ public class Order implements Serializable {
     private Date thistime;
 
     @TableField(exist = false)
+    private Double totalAmount;
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
     @Override

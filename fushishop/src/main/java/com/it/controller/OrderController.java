@@ -73,6 +73,19 @@ public class OrderController {
         QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
         orderQueryWrapper.eq("uid", id);
         List<Order> list = orderService.list(orderQueryWrapper);
+
+
+        for (Order order:list){
+
+            Integer id1 = order.getId();
+            QueryWrapper<Cart> eq = new QueryWrapper<Cart>().select("SUM(price * num) AS sum").groupBy("oid").eq("oid", id1);
+            Map<String, Object> map = cartService.getMap(eq);
+
+            order.setTotalAmount((Double) map.get("sum"));
+
+        }
+
+
         return Result.ok(list);
     }
 }
