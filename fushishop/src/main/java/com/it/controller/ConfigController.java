@@ -15,6 +15,14 @@ public class ConfigController {
     @Autowired
     private ConfigService userService;
 
+
+
+    @RequestMapping("adminlist")
+    public Result adminlist() {
+
+        return Result.ok(userService.list());
+    }
+
     @RequestMapping("banners")
     public Result list() {
 
@@ -31,14 +39,14 @@ public class ConfigController {
     }
 
     @PostMapping("save")
-    public Result save(Config user) {
+    public Result save(@RequestBody Config user) {
         boolean save = userService.save(user);
         return Result.ok();
     }
 
 
     @PostMapping("update")
-    public Result update(Config user) {
+    public Result update(@RequestBody Config user) {
         boolean update = userService.updateById(user);
         return Result.ok();
     }

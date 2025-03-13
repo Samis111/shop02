@@ -1,33 +1,7 @@
 <template>
   <div class="product-analytics">
     <!-- 筛选条件 -->
-    <div class="filter-bar">
-      <el-date-picker
-        v-model="dateRange"
-        type="daterange"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-        :picker-options="pickerOptions"
-        @change="handleDateChange"
-      ></el-date-picker>
-      
-      <el-select v-model="category" placeholder="商品分类" clearable @change="handleFilter">
-        <el-option
-          v-for="item in categories"
-          :key="item.id"
-          :label="item.name"
-          :value="item.id"
-        ></el-option>
-      </el-select>
-      
-      <el-select v-model="sortBy" placeholder="排序方式" @change="handleFilter">
-        <el-option label="销量从高到低" value="sales-desc"></el-option>
-        <el-option label="销量从低到高" value="sales-asc"></el-option>
-        <el-option label="金额从高到低" value="amount-desc"></el-option>
-        <el-option label="金额从低到高" value="amount-asc"></el-option>
-      </el-select>
-    </div>
+
 
     <!-- 数据概览 -->
     <el-row :gutter="20" class="overview-cards">
@@ -35,40 +9,22 @@
         <el-card shadow="hover">
           <div class="overview-item">
             <div class="title">总销售额</div>
-            <div class="number">¥{{ formatNumber(overview.totalAmount) }}</div>
-            <div class="trend" :class="{ up: overview.amountGrowth > 0 }">
-              较上期{{ Math.abs(overview.amountGrowth) }}%
-              <i :class="overview.amountGrowth > 0 ? 'el-icon-top' : 'el-icon-bottom'"></i>
-            </div>
+            <div class="number">¥{{ formatNumber(overview.sumprice) }}</div>
+
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="8">
         <el-card shadow="hover">
           <div class="overview-item">
             <div class="title">销售数量</div>
-            <div class="number">{{ formatNumber(overview.totalSales) }}</div>
-            <div class="trend" :class="{ up: overview.salesGrowth > 0 }">
-              较上期{{ Math.abs(overview.salesGrowth) }}%
-              <i :class="overview.salesGrowth > 0 ? 'el-icon-top' : 'el-icon-bottom'"></i>
-            </div>
+            <div class="number">{{ formatNumber(overview.sumnum) }}</div>
           </div>
         </el-card>
       </el-col>
-      
-      <el-col :span="8">
-        <el-card shadow="hover">
-          <div class="overview-item">
-            <div class="title">平均客单价</div>
-            <div class="number">¥{{ formatNumber(overview.averageOrder) }}</div>
-            <div class="trend" :class="{ up: overview.orderGrowth > 0 }">
-              较上期{{ Math.abs(overview.orderGrowth) }}%
-              <i :class="overview.orderGrowth > 0 ? 'el-icon-top' : 'el-icon-bottom'"></i>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
+
+
     </el-row>
 
     <!-- 销售趋势图 -->
@@ -76,8 +32,8 @@
       <div slot="header">
         <span>销售趋势</span>
         <el-radio-group v-model="chartType" size="small">
-          <el-radio-button label="amount">销售额</el-radio-button>
-          <el-radio-button label="quantity">销售量</el-radio-button>
+          <el-radio-button label="amount">销售量</el-radio-button>
+         
         </el-radio-group>
       </div>
       <div class="chart-container">
@@ -88,12 +44,7 @@
     <!-- 商品销售排行 -->
     <el-card shadow="hover" class="rank-card">
       <div slot="header">商品销售排行</div>
-      <el-table
-        :data="rankList"
-        style="width: 100%"
-        :show-header="false"
-        row-class-name="rank-row"
-      >
+      <el-table :data="rankList" style="width: 100%" :show-header="false" row-class-name="rank-row">
         <el-table-column width="50">
           <template slot-scope="scope">
             <div class="rank-number" :class="{ top3: scope.$index < 3 }">
@@ -101,15 +52,11 @@
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column>
           <template slot-scope="scope">
             <div class="product-info">
-              <el-image
-                :src="scope.row.image"
-                :alt="scope.row.name"
-                class="product-image"
-              ></el-image>
+              <el-image :src="scope.row.image" :alt="scope.row.name" class="product-image"></el-image>
               <div class="product-detail">
                 <div class="name">{{ scope.row.name }}</div>
                 <div class="category">{{ scope.row.category }}</div>
@@ -117,7 +64,7 @@
             </div>
           </template>
         </el-table-column>
-        
+
         <el-table-column width="150" align="right">
           <template slot-scope="scope">
             <div class="sales-info">
@@ -147,7 +94,7 @@ export default {
       category: '',
       sortBy: 'sales-desc',
       chartType: 'amount',
-      
+
       loading: false,
       overview: {
         totalAmount: 0,
@@ -157,7 +104,7 @@ export default {
         salesGrowth: 0,
         orderGrowth: 0
       },
-      
+
       chartData: {
         labels: [],
         datasets: [{
@@ -165,10 +112,10 @@ export default {
           data: []
         }]
       },
-      
+
       rankList: [],
       categories: [],
-      
+
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -204,11 +151,11 @@ export default {
   },
   methods: {
     formatNumber,
-    
+
     async fetchCategories() {
       // 获取商品分类列表
     },
-    
+
     async fetchData() {
       this.loading = true
       try {
@@ -221,9 +168,12 @@ export default {
             sortBy: this.sortBy
           })
         ])
-        
+
         this.overview = overview.data
-        this.updateChartData(sales.data.trend)
+
+        console.log(this.overview)
+
+        this.updateChartData(sales.data)
         this.rankList = sales.data.rank
       } catch (error) {
         this.$message.error('获取数据失败')
@@ -231,23 +181,23 @@ export default {
         this.loading = false
       }
     },
-    
+
     updateChartData(trend) {
       this.chartData = {
-        labels: trend.map(item => item.date),
+        labels: trend.map(item => item.name),
         datasets: [{
-          label: this.chartType === 'amount' ? '销售额' : '销售量',
-          data: trend.map(item => this.chartType === 'amount' ? item.amount : item.quantity),
+         
+          data: trend.map(item => this.chartType === 'amount' ? item.num : item.tid),
           borderColor: '#409EFF',
           backgroundColor: 'rgba(64, 158, 255, 0.1)'
         }]
       }
     },
-    
+
     handleDateChange() {
       this.fetchData()
     },
-    
+
     handleFilter() {
       this.fetchData()
     }
@@ -267,60 +217,60 @@ export default {
     display: flex;
     gap: 15px;
   }
-  
+
   .overview-cards {
     margin-bottom: 20px;
-    
+
     .overview-item {
       text-align: center;
-      
+
       .title {
         color: #666;
         margin-bottom: 10px;
       }
-      
+
       .number {
         font-size: 24px;
         font-weight: bold;
         margin-bottom: 10px;
       }
-      
+
       .trend {
         color: #f56c6c;
         font-size: 14px;
-        
+
         &.up {
           color: #67c23a;
         }
-        
+
         i {
           margin-left: 5px;
         }
       }
     }
   }
-  
+
   .chart-card {
     margin-bottom: 20px;
-    
+
     :deep(.el-card__header) {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    
+
     .chart-container {
       height: 400px;
     }
   }
-  
+
   .rank-card {
     .rank-row {
       &:hover {
         background-color: #f5f7fa;
       }
     }
-    
+
     .rank-number {
       width: 24px;
       height: 24px;
@@ -328,52 +278,52 @@ export default {
       text-align: center;
       background: #f0f2f5;
       border-radius: 4px;
-      
+
       &.top3 {
         color: #fff;
         background: #f56c6c;
-        
+
         &:first-child {
           background: #f7ba2a;
         }
-        
+
         &:nth-child(2) {
           background: #409EFF;
         }
       }
     }
-    
+
     .product-info {
       display: flex;
       align-items: center;
-      
+
       .product-image {
         width: 40px;
         height: 40px;
         margin-right: 10px;
         border-radius: 4px;
       }
-      
+
       .product-detail {
         .name {
           margin-bottom: 5px;
         }
-        
+
         .category {
           color: #909399;
           font-size: 12px;
         }
       }
     }
-    
+
     .sales-info {
       text-align: right;
-      
+
       .amount {
         color: #f56c6c;
         margin-bottom: 5px;
       }
-      
+
       .quantity {
         color: #909399;
         font-size: 12px;
@@ -381,4 +331,4 @@ export default {
     }
   }
 }
-</style> 
+</style>

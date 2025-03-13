@@ -18,13 +18,24 @@ public class TrappingsController {
 
     @RequestMapping()
     public Result list(@RequestParam(value = "sort", defaultValue = "") String sort,
-                       @RequestParam(value = "limit", defaultValue = "8") String limit
+                       @RequestParam(value = "limit", defaultValue = "8") String limit,
+                       @RequestParam(value = "name", defaultValue = "") String name,
+                       @RequestParam(value = "brand", defaultValue = "") String brand
     ) {
         QueryWrapper<Trappings> queryWrapper = new QueryWrapper<>();
         if (sort.equals("new")) {
             queryWrapper.orderByDesc("infotime");
         } else if (sort.equals("sales")) {
             queryWrapper.orderByDesc("price");
+        }
+
+
+        if (!name.equals("")) {
+            queryWrapper.like("name", name);
+        }
+
+        if (!brand.equals("")) {
+            queryWrapper.eq("type", brand);
         }
 
         queryWrapper.last("limit " + limit);
@@ -40,14 +51,14 @@ public class TrappingsController {
     }
 
     @PostMapping("save")
-    public Result save(Trappings user) {
+    public Result save(@RequestBody Trappings user) {
         boolean save = trappingsService.save(user);
         return Result.ok();
     }
 
 
     @PostMapping("update")
-    public Result update(Trappings user) {
+    public Result update(@RequestBody Trappings user) {
         boolean update = trappingsService.updateById(user);
         return Result.ok();
     }

@@ -6,7 +6,7 @@ export default {
    */
   list(params) {
     return request({
-      url: '/admin/brands',
+      url: '/brands',
       method: 'get',
       params
     })
@@ -17,7 +17,7 @@ export default {
    */
   create(data) {
     return request({
-      url: '/admin/brands',
+      url: '/brands/save',
       method: 'post',
       data
     })
@@ -28,8 +28,8 @@ export default {
    */
   update(id, data) {
     return request({
-      url: `/admin/brands/${id}`,
-      method: 'put',
+      url: `/brands/update`,
+      method: 'post',
       data
     })
   },
@@ -39,8 +39,8 @@ export default {
    */
   delete(id) {
     return request({
-      url: `/admin/brands/${id}`,
-      method: 'delete'
+      url: `/brands/delete/${id}`,
+      method: 'get'
     })
   },
 
@@ -51,7 +51,7 @@ export default {
     const formData = new FormData()
     formData.append('file', file)
     return request({
-      url: '/admin/upload/brand-logo',
+      url: '/file/Adminupload',
       method: 'post',
       data: formData,
       headers: {

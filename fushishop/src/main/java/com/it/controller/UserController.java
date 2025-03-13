@@ -1,5 +1,6 @@
 package com.it.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.it.domain.Result;
 import com.it.domain.User;
 import com.it.service.UserService;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("user")
+@RequestMapping("users")
 @RestController
 public class UserController {
 
@@ -17,9 +18,14 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping("list")
-    public Result list() {
+    public Result list(@RequestParam(name = "keyword", defaultValue = "") String keyword) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 
-        List<User> list = userService.list();
+        if (!keyword.equals("")) {
+            queryWrapper.like("name", keyword);
+        }
+
+        List<User> list = userService.list(queryWrapper);
         return Result.ok(list);
     }
 
@@ -49,6 +55,21 @@ public class UserController {
     public Result delete(@PathVariable("id") Integer id) {
 
         boolean byId = userService.removeById(id);
+        return Result.ok();
+    }
+
+    @PostMapping("/{id}/status")
+    public Result status(@PathVariable("id") Integer id) {
+
+        User byId = userService.getById(id);
+
+        if (byId.getState().equals("1")) {
+            byId.setState("0");
+        } else if (byId.getState().equals("0")) {
+            byId.setState("1");
+        }
+
+        boolean update = userService.updateById(byId);
         return Result.ok();
     }
 }

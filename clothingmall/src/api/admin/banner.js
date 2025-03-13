@@ -6,7 +6,7 @@ export default {
    */
   list() {
     return request({
-      url: '/admin/banners',
+      url: '/home/adminlist',
       method: 'get'
     })
   },
@@ -16,7 +16,7 @@ export default {
    */
   create(data) {
     return request({
-      url: '/admin/banners',
+      url: '/home/save',
       method: 'post',
       data
     })
@@ -27,7 +27,7 @@ export default {
    */
   update(id, data) {
     return request({
-      url: `/admin/banners/${id}`,
+      url: `/home/update/${id}`,
       method: 'put',
       data
     })
@@ -38,8 +38,8 @@ export default {
    */
   delete(id) {
     return request({
-      url: `/admin/banners/${id}`,
-      method: 'delete'
+      url: `/home/delete/${id}`,
+      method: 'get'
     })
   },
 

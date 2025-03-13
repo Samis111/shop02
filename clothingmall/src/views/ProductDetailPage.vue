@@ -35,7 +35,7 @@
               <span class="label">数量：</span>
               <el-input-number v-model="quantity" :min="1" :max="product.stock"
                 @change="handleQuantityChange"></el-input-number>
-              <span class="stock">库存：{{ product.stock }}件</span>
+        
             </div>
             <el-button type="primary" size="large" @click="handleAddToCart">
               加入购物车

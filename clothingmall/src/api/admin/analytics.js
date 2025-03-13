@@ -6,7 +6,7 @@ export default {
    */
   getProductSales(params) {
     return request({
-      url: '/admin/analytics/product-sales',
+      url: '/analytics/tidtotal',
       method: 'get',
       params
     })
@@ -17,7 +17,7 @@ export default {
    */
   getMonthlySales(params) {
     return request({
-      url: '/admin/analytics/monthly-sales',
+      url: '/analytics/monthly',
       method: 'get',
       params
     })
@@ -28,7 +28,7 @@ export default {
    */
   getYearlySales(params) {
     return request({
-      url: '/admin/analytics/yearly-sales',
+      url: '/analytics/year',
       method: 'get',
       params
     })
@@ -39,7 +39,7 @@ export default {
    */
   getSalesOverview() {
     return request({
-      url: '/admin/analytics/sales-overview',
+      url: '/analytics/totalAll',
       method: 'get'
     })
   }

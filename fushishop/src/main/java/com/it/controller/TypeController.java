@@ -22,27 +22,35 @@ public class TypeController {
     public Result list() {
         QueryWrapper<Type> last = new QueryWrapper<Type>().last("limit 5");
         return Result.ok(userService.list(last));
+    }
 
+
+    @RequestMapping()
+    public Result adminlist(@RequestParam(name = "searchQuery",defaultValue = "")String searchQuery) {
+        QueryWrapper<Type> last = new QueryWrapper<Type>();
+        if (!searchQuery.equals("")){
+            last.like("type",searchQuery);
+        }
+
+        return Result.ok(userService.list(last));
     }
 
     @RequestMapping("find/{Uid}")
     public Result find(@PathVariable("Uid") Integer Uid) {
 
 
-
         return Result.ok(userService.getById(Uid));
     }
 
     @PostMapping("save")
-    public Result save(Type user) {
-        boolean save = userService.save(user);
+    public Result save(@RequestBody Type type) {
+        boolean save = userService.save(type);
         return Result.ok();
     }
 
 
     /**
      * 类型限制接口
-     *
      * @return
      */
     @RequestMapping("listLimit")
@@ -52,8 +60,8 @@ public class TypeController {
     }
 
     @PostMapping("update")
-    public Result update(Type user) {
-        boolean update = userService.updateById(user);
+    public Result update(@RequestBody Type type) {
+        boolean update = userService.updateById(type);
         return Result.ok();
     }
 

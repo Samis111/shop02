@@ -103,7 +103,7 @@ export default {
           { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
         ]
       },
-      uploadUrl: process.env.VUE_APP_API_URL + '/upload/avatar'
+      uploadUrl: 'api/file/upload'
     }
   },
   computed: {

@@ -6,7 +6,7 @@ export default {
    */
   list(params) {
     return request({
-      url: '/admin/users',
+      url: '/users/list',
       method: 'get',
       params
     })
@@ -17,8 +17,8 @@ export default {
    */
   updateStatus(id, status) {
     return request({
-      url: `/admin/users/${id}/status`,
-      method: 'put',
+      url: `/users/${id}/status`,
+      method: 'post',
       data: { status }
     })
   },
@@ -28,7 +28,7 @@ export default {
    */
   resetPassword(id) {
     return request({
-      url: `/admin/users/${id}/reset-password`,
+      url: `/users/${id}/reset-password`,
       method: 'post'
     })
   },
@@ -38,7 +38,7 @@ export default {
    */
   getDetail(id) {
     return request({
-      url: `/admin/users/${id}`,
+      url: `/users/${id}`,
       method: 'get'
     })
   }
