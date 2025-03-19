@@ -7,8 +7,8 @@
       <el-col :span="8">
         <el-card shadow="hover">
           <div class="overview-item">
-            <div class="title">总销售额</div>
-            <div class="number">¥{{ formatNumber(overview.totalAmount) }}</div>
+            <div class="title">年度总销售额</div>
+            <div class="number">¥{{ formatNumber(yearlyTotal) }}</div>
 
           </div>
         </el-card>
@@ -153,6 +153,11 @@ export default {
       }
     }
   },
+  computed: {
+    yearlyTotal() {
+      return this.yearlyData.reduce((sum, item) => sum + (item.total || 0), 0)
+    }
+  },
   created() {
     this.fetchData()
   },
@@ -166,7 +171,7 @@ export default {
 
         // this.overview = res.data.overview
         this.yearlyData = res.data
-        // this.updateChartData()
+        this.updateChartData()
 
         // 更新饼图数据
         this.seasonData.datasets[0].data = res.data.seasonDistribution
@@ -180,19 +185,14 @@ export default {
     },
 
     updateChartData() {
-      const getData = (item) => {
-        switch (this.chartType) {
-          case 'amount':
-            return item.amount
-          
-        }
-      }
-
+      // 按年份排序
+      const sortedData = [...this.yearlyData].sort((a, b) => a.year - b.year)
+      
       this.chartData = {
-        labels: this.yearlyData.map(item => item.year),
+        labels: sortedData.map(item => `${item.year}年`),
         datasets: [{
-          label: this.getChartLabel(),
-          data: this.yearlyData.map(getData),
+          label: '销售额',
+          data: sortedData.map(item => item.total),
           borderColor: '#409EFF',
           backgroundColor: 'rgba(64, 158, 255, 0.1)'
         }]
