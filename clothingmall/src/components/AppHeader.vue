@@ -3,7 +3,7 @@
     <!-- Logo区域 -->
     <div class="logo" @click="$router.push('/')">
       <img src="@/assets/logo.png" alt="商城Logo">
-      <span class="store-name">时尚商城</span>
+      <span class="store-name">品牌服饰商城</span>
     </div>
 
     <!-- 导航栏 -->

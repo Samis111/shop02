@@ -43,7 +43,7 @@
 
     <!-- 版权信息 -->
     <div class="copyright">
-      <p>© 2024 时尚商城 版权所有 | ICP备案号：京ICP备12345678号</p>
+      <p>© 2024 品牌服饰商城 版权所有 | ICP备案号：京ICP备12345678号</p>
     </div>
   </footer>
 </template>
